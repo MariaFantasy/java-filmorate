@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 @lombok.Data
+@lombok.AllArgsConstructor
+@lombok.RequiredArgsConstructor
 @lombok.EqualsAndHashCode(of = { "id" })
 public class Film {
     Long id;
