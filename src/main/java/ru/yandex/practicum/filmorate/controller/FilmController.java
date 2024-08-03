@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -14,6 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
@@ -24,19 +27,24 @@ public class FilmController {
     @PostMapping
     public Film create(@RequestBody Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
+            log.error("Film has not been created: Name is empty");
             throw new ConditionsNotMetException("Название не может быть пустым");
         }
         if (film.getDescription().length() > 200) {
+            log.error("Film has not been created: Description too long");
             throw new ConditionsNotMetException("Максимальная длина описания — 200 символов");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.error("Film has not been created: Release Date is too early");
             throw new ConditionsNotMetException("Дата релиза — не раньше 28 декабря 1895 года");
         }
-        if (film.getDuration().isNegative()) {
+        if (!film.getDuration().isPositive()) {
+            log.error("Film has not been created: Duration is not positive");
             throw new ConditionsNotMetException("Продолжительность фильма должна быть положительным числом");
         }
         film.setId(getNextId());
         films.put(film.getId(), film);
+        log.info("Film with id " + film.getId()  + " created");
         return film;
     }
 
@@ -48,23 +56,29 @@ public class FilmController {
         if (films.containsKey(newFilm.getId())) {
             Film oldFilm = films.get(newFilm.getId());
             if (newFilm.getName() == null || newFilm.getName().isBlank()) {
+                log.error("Film has not been updated: Name is empty");
                 throw new ConditionsNotMetException("Название не может быть пустым");
             }
             if (newFilm.getDescription().length() > 200) {
+                log.error("Film has not been updated: Description too long");
                 throw new ConditionsNotMetException("Максимальная длина описания — 200 символов");
             }
             if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+                log.error("Film has not been updated: Release Date is too early");
                 throw new ConditionsNotMetException("Дата релиза — не раньше 28 декабря 1895 года");
             }
-            if (newFilm.getDuration().isNegative()) {
+            if (!newFilm.getDuration().isPositive()) {
+                log.error("Film has not been updated: Duration is not positive");
                 throw new ConditionsNotMetException("Продолжительность фильма должна быть положительным числом");
             }
             oldFilm.setName(newFilm.getName());
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
+            log.info("Film with id " + oldFilm.getId()  + " updated");
             return oldFilm;
         }
+        log.error("Film has not been updated: Id not found");
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
     }
 
