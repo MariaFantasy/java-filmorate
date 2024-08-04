@@ -19,6 +19,7 @@ import java.util.Map;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final Map<Long, User> users = new HashMap<>();
+    private long userCounter = 0;
 
     @GetMapping
     public Collection<User> findAll() {
@@ -104,11 +105,6 @@ public class UserController {
     }
 
     private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++userCounter;
     }
 }
