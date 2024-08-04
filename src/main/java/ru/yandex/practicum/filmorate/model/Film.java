@@ -11,17 +11,17 @@ import java.time.LocalDate;
 @lombok.RequiredArgsConstructor
 @lombok.EqualsAndHashCode(of = { "id" })
 public class Film {
-    Long id;
+    private Long id;
 
     @NotNull
     @NotBlank
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
     @NotNull
-    LocalDate releaseDate;
+    private LocalDate releaseDate;
 
     @Positive
-    int duration;
+    private int duration;
 }

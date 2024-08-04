@@ -11,19 +11,19 @@ import java.time.LocalDate;
 @lombok.RequiredArgsConstructor
 @lombok.EqualsAndHashCode(of = { "id" })
 public class User {
-    Long id;
+    private Long id;
 
     @NotNull
     @NotBlank
     @Email
-    String email;
+    private String email;
 
     @NotNull
     @NotBlank
-    String login;
+    private String login;
 
-    String name;
+    private String name;
 
     @NotNull
-    LocalDate birthday;
+    private LocalDate birthday;
 }
