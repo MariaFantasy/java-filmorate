@@ -28,31 +28,10 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            log.debug("User has not been created: Email is empty");
-            throw new ConditionsNotMetException("Электронная почта не может быть пустой");
-        }
-        if (!user.getEmail().contains("@")) {
-            log.debug("User has not been created: Email not contains @");
-            throw new ConditionsNotMetException("Электронная почта должна содержать символ @");
-        }
-        if (user.getLogin() == null || user.getLogin().isBlank()) {
-            log.debug("User has not been created: Login is empty");
-            throw new ConditionsNotMetException("Логин не может быть пустым");
-        }
-        if (user.getLogin().contains(" ")) {
-            log.debug("User has not been created: Login contains spaces");
-            throw new ConditionsNotMetException("Логин не может содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.debug("User has not been created: Birthday is after now");
-            throw new ConditionsNotMetException("Дата рождения не может быть в будущем.");
-        }
+        validate(user);
         if (user.getName() == null || user.getName().isBlank()) {
             log.debug("Name of User is empty");
             user.setName(user.getLogin());
-        } else {
-            user.setName(user.getName());
         }
         final long userId = getNextId();
         user.setId(userId);
@@ -69,26 +48,7 @@ public class UserController {
             throw new ConditionsNotMetException("Id должен быть указан");
         }
         if (users.containsKey(userId)) {
-            if (user.getEmail() == null || user.getEmail().isBlank()) {
-                log.debug("User has not been updated: Email is empty");
-                throw new ConditionsNotMetException("Электронная почта не может быть пустой");
-            }
-            if (!user.getEmail().contains("@")) {
-                log.debug("User has not been updated: Email not contains @");
-                throw new ConditionsNotMetException("Электронная почта должна содержать символ @");
-            }
-            if (user.getLogin() == null || user.getLogin().isBlank()) {
-                log.debug("User has not been updated: Login is empty");
-                throw new ConditionsNotMetException("Логин не может быть пустым");
-            }
-            if (user.getLogin().contains(" ")) {
-                log.debug("User has not been updated: Login contains spaces");
-                throw new ConditionsNotMetException("Логин не может содержать пробелы");
-            }
-            if (user.getBirthday().isAfter(LocalDate.now())) {
-                log.debug("User has not been updated: Birthday is after now");
-                throw new ConditionsNotMetException("Дата рождения не может быть в будущем.");
-            }
+            validate(user);
             if (user.getName() == null || user.getName().isBlank()) {
                 log.debug("Name of User is empty");
                 user.setName(user.getLogin());
@@ -103,5 +63,16 @@ public class UserController {
 
     private long getNextId() {
         return ++userCounter;
+    }
+
+    private void validate(final User user) {
+        if (user.getLogin().contains(" ")) {
+            log.debug("User has not been created: Login contains spaces");
+            throw new ConditionsNotMetException("Логин не может содержать пробелы");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            log.debug("User has not been created: Birthday is after now");
+            throw new ConditionsNotMetException("Дата рождения не может быть в будущем.");
+        }
     }
 }

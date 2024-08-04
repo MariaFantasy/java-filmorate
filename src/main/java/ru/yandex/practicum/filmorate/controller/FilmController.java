@@ -28,7 +28,7 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        validateFilm(film);
+        validate(film);
         final long filmId = getNextId();
         film.setId(filmId);
         films.put(filmId, film);
@@ -44,7 +44,7 @@ public class FilmController {
             throw new ConditionsNotMetException("Id должен быть указан");
         }
         if (films.containsKey(filmId)) {
-            validateFilm(film);
+            validate(film);
             films.put(filmId, film);
             log.info("Film with id " + filmId  + " updated");
             return film;
@@ -57,7 +57,7 @@ public class FilmController {
         return ++filmCounter;
     }
 
-    private void validateFilm(final Film film) {
+    private void validate(final Film film) {
         if (film.getDescription().length() > 200) {
             log.debug("Film has not been created: Description too long");
             throw new ConditionsNotMetException("Максимальная длина описания — 200 символов");
