@@ -15,31 +15,31 @@ public class FilmControllerTest {
 
     @Test
     public void testThrowsIfFilmNameIsEmpty() {
-        Film film = new Film(1L, null, "BBB", LocalDate.of(2024, 8, 3), Duration.ofMinutes(60));
+        Film film = new Film(1L, null, "BBB", LocalDate.of(2024, 8, 3), 60);
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmNameIsBlank() {
-        Film film = new Film(1L, "   ", "BBB", LocalDate.of(2024, 8, 3), Duration.ofMinutes(60));
+        Film film = new Film(1L, "   ", "BBB", LocalDate.of(2024, 8, 3), 60);
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmDescriptionLengthMoreThan200() {
-        Film film = new Film(1L, "ABC", "B".repeat(201), LocalDate.of(2024, 8, 3), Duration.ofMinutes(60));
+        Film film = new Film(1L, "ABC", "B".repeat(201), LocalDate.of(2024, 8, 3), 60);
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmReleaseDateIsBefore28Dec1895() {
-        Film film = new Film(1L, "ABC", "BBB", LocalDate.of(1895, 12, 27), Duration.ofMinutes(60));
+        Film film = new Film(1L, "ABC", "BBB", LocalDate.of(1895, 12, 27), 60);
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmDurationIsPositive() {
-        Film film = new Film(1L, "ABC", "BBB", LocalDate.of(2024, 8, 3), Duration.ZERO);
+        Film film = new Film(1L, "ABC", "BBB", LocalDate.of(2024, 8, 3), 0);
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
@@ -51,7 +51,7 @@ public class FilmControllerTest {
 
     @Test
     public void testFilmCreatedIfAllFieldsNormal() {
-        Film film = new Film(1L, "ABC", "BBB", LocalDate.of(2024, 8, 3), Duration.ofMinutes(60));
+        Film film = new Film(1L, "ABC", "BBB", LocalDate.of(2024, 8, 3), 60);
         Film createdFilm = filmController.create(film);
         assertEquals(film.getName(), createdFilm.getName(), "Expected equals films");
     }

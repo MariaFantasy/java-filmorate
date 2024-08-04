@@ -39,7 +39,7 @@ public class FilmController {
             log.debug("Film has not been created: Release Date is too early");
             throw new ConditionsNotMetException("Дата релиза — не раньше 28 декабря 1895 года");
         }
-        if (!film.getDuration().isPositive()) {
+        if (film.getDuration() <= 0) {
             log.debug("Film has not been created: Duration is not positive");
             throw new ConditionsNotMetException("Продолжительность фильма должна быть положительным числом");
         }
@@ -69,7 +69,7 @@ public class FilmController {
                 log.debug("Film has not been updated: Release Date is too early");
                 throw new ConditionsNotMetException("Дата релиза — не раньше 28 декабря 1895 года");
             }
-            if (!newFilm.getDuration().isPositive()) {
+            if (newFilm.getDuration() <= 0) {
                 log.debug("Film has not been updated: Duration is not positive");
                 throw new ConditionsNotMetException("Продолжительность фильма должна быть положительным числом");
             }

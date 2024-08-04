@@ -24,5 +24,5 @@ public class Film {
     LocalDate releaseDate;
 
     @Positive
-    Duration duration;
+    int duration;
 }
