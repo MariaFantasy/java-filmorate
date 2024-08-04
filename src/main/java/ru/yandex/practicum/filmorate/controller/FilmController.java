@@ -52,36 +52,32 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        final Long filmId = newFilm.getId();
+    public Film update(@Valid @RequestBody Film film) {
+        final Long filmId = film.getId();
         if (filmId == null) {
             log.debug("Film has not been updated: Id is empty");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
         if (films.containsKey(filmId)) {
-            Film oldFilm = films.get(filmId);
-            if (newFilm.getName() == null || newFilm.getName().isBlank()) {
+            if (film.getName() == null || film.getName().isBlank()) {
                 log.debug("Film has not been updated: Name is empty");
                 throw new ConditionsNotMetException("Название не может быть пустым");
             }
-            if (newFilm.getDescription().length() > 200) {
+            if (film.getDescription().length() > 200) {
                 log.debug("Film has not been updated: Description too long");
                 throw new ConditionsNotMetException("Максимальная длина описания — 200 символов");
             }
-            if (newFilm.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                 log.debug("Film has not been updated: Release Date is too early");
                 throw new ConditionsNotMetException("Дата релиза — не раньше 28 декабря 1895 года");
             }
-            if (newFilm.getDuration() <= 0) {
+            if (film.getDuration() <= 0) {
                 log.debug("Film has not been updated: Duration is not positive");
                 throw new ConditionsNotMetException("Продолжительность фильма должна быть положительным числом");
             }
-            oldFilm.setName(newFilm.getName());
-            oldFilm.setDescription(newFilm.getDescription());
-            oldFilm.setReleaseDate(newFilm.getReleaseDate());
-            oldFilm.setDuration(newFilm.getDuration());
+            films.put(filmId, film);
             log.info("Film with id " + filmId  + " updated");
-            return oldFilm;
+            return film;
         }
         log.info("Film has not been updated: Id not found");
         throw new NotFoundException("Фильм с id = " + filmId + " не найден");
