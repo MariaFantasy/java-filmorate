@@ -4,24 +4,33 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+
+import java.util.Set;
 import java.time.LocalDate;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
     public static FilmController filmController = new FilmController();
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
     public void testThrowsIfFilmNameIsEmpty() {
         Film film = new Film(1L, null, "BBB", LocalDate.of(2024, 8, 3), 60);
-        assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
     public void testThrowsIfFilmNameIsBlank() {
         Film film = new Film(1L, "   ", "BBB", LocalDate.of(2024, 8, 3), 60);
-        assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
@@ -39,13 +48,15 @@ public class FilmControllerTest {
     @Test
     public void testThrowsIfFilmDurationIsPositive() {
         Film film = new Film(1L, "ABC", "BBB", LocalDate.of(2024, 8, 3), 0);
-        assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
     public void testThrowsIfFilmEmpty() {
         Film film = new Film();
-        assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
