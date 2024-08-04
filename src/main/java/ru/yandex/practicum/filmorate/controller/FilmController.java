@@ -44,20 +44,22 @@ public class FilmController {
             log.debug("Film has not been created: Duration is not positive");
             throw new ConditionsNotMetException("Продолжительность фильма должна быть положительным числом");
         }
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-        log.info("Film with id " + film.getId()  + " created");
+        final long filmId = getNextId();
+        film.setId(filmId);
+        films.put(filmId, film);
+        log.info("Film with id " + filmId  + " created");
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film newFilm) {
-        if (newFilm.getId() == null) {
+        final Long filmId = newFilm.getId();
+        if (filmId == null) {
             log.debug("Film has not been updated: Id is empty");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (films.containsKey(newFilm.getId())) {
-            Film oldFilm = films.get(newFilm.getId());
+        if (films.containsKey(filmId)) {
+            Film oldFilm = films.get(filmId);
             if (newFilm.getName() == null || newFilm.getName().isBlank()) {
                 log.debug("Film has not been updated: Name is empty");
                 throw new ConditionsNotMetException("Название не может быть пустым");
@@ -78,11 +80,11 @@ public class FilmController {
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
             oldFilm.setDuration(newFilm.getDuration());
-            log.info("Film with id " + oldFilm.getId()  + " updated");
+            log.info("Film with id " + filmId  + " updated");
             return oldFilm;
         }
         log.info("Film has not been updated: Id not found");
-        throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
+        throw new NotFoundException("Фильм с id = " + filmId + " не найден");
     }
 
     private long getNextId() {

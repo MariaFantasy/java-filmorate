@@ -54,20 +54,22 @@ public class UserController {
         } else {
             user.setName(user.getName());
         }
-        user.setId(getNextId());
-        users.put(user.getId(), user);
-        log.info("User with id " + user.getId()  + " created");
+        final long userId = getNextId();
+        user.setId(userId);
+        users.put(userId, user);
+        log.info("User with id " + userId + " created");
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
-        if (newUser.getId() == null) {
+        final Long userId = newUser.getId();
+        if (userId == null) {
             log.debug("User has not been updated: Id is empty");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (users.containsKey(newUser.getId())) {
-            User oldUser = users.get(newUser.getId());
+        if (users.containsKey(userId)) {
+            User oldUser = users.get(userId);
             if (newUser.getEmail() == null || newUser.getEmail().isBlank()) {
                 log.debug("User has not been updated: Email is empty");
                 throw new ConditionsNotMetException("Электронная почта не может быть пустой");
@@ -97,11 +99,11 @@ public class UserController {
                 oldUser.setName(newUser.getName());
             }
             oldUser.setBirthday(newUser.getBirthday());
-            log.info("User with id " + oldUser.getId()  + " updated");
+            log.info("User with id " + userId  + " updated");
             return oldUser;
         }
         log.info("User has not been updated: Id not found");
-        throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
+        throw new NotFoundException("Пользователь с id = " + userId + " не найден");
     }
 
     private long getNextId() {
