@@ -63,11 +63,11 @@ public class FilmController {
 
     private void validate(final Film film) {
         if (film.getDescription().length() > 200) {
-            log.info("Фильм не прошел валидацию по причине: Максимальная длина описания — 200 символов");
+            log.debug("Фильм не прошел валидацию по причине: Максимальная длина описания — 200 символов");
             throw new ConditionsNotMetException("Максимальная длина описания — 200 символов");
         }
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Фильм не прошел валидацию по причине: Дата релиза — не раньше 28 декабря 1895 года");
+            log.debug("Фильм не прошел валидацию по причине: Дата релиза — не раньше 28 декабря 1895 года");
             throw new ConditionsNotMetException("Дата релиза — не раньше 28 декабря 1895 года");
         }
     }
