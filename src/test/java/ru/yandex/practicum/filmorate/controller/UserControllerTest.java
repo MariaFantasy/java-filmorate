@@ -2,10 +2,8 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,6 +54,7 @@ public class UserControllerTest {
         User createdUser = userController.create(user);
         assertEquals(createdUser.getLogin(), createdUser.getName(), "Expected login in name");
     }
+
     @Test
     public void testSetLoginInNameIfNameIsBlank() {
         User user = new User(1L, "myemail@gmail.com", "login", "  ", LocalDate.of(2024, 1, 1));
