@@ -24,13 +24,14 @@ public class UserController {
     @GetMapping
     public Collection<User> findAll() {
         log.info("Пришел GET запрос /users");
-        log.info("Отправлен ответ GET /users с телом: " + users.values());
-        return users.values();
+        Collection<User> allUsers = users.values();
+        log.info("Отправлен ответ GET /users с телом: {}", allUsers);
+        return allUsers;
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        log.info("Пришел POST запрос /users с телом: " + user);
+        log.info("Пришел POST запрос /users с телом: {}", user);
         validate(user);
         if (user.getName() == null || user.getName().isBlank()) {
             log.debug("Поле Name пустое, оно будет заполнено полем Login.");
@@ -39,13 +40,13 @@ public class UserController {
         final long userId = getNextId();
         user.setId(userId);
         users.put(userId, user);
-        log.info("Отправлен ответ POST /users с телом: " + user);
+        log.info("Отправлен ответ POST /users с телом: {}", user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        log.info("Пришел PUT запрос /users с телом: " + user);
+        log.info("Пришел PUT запрос /users с телом: {}", user);
         final Long userId = user.getId();
         if (userId == null) {
             log.info("Запрос PUT /users обработан не был по причине: Id должен быть указан");
@@ -58,10 +59,10 @@ public class UserController {
                 user.setName(user.getLogin());
             }
             users.put(userId, user);
-            log.info("Отправлен ответ PUT /users с телом: " + user);
+            log.info("Отправлен ответ PUT /users с телом: {}", user);
             return user;
         }
-        log.info("Запрос PUT /users обработан не был по причине: Фильм с id = " + userId + " не найден");
+        log.info("Запрос PUT /users обработан не был по причине: Фильм с id = {} не найден", userId);
         throw new NotFoundException("Пользователь с id = " + userId + " не найден");
     }
 
