@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
@@ -10,17 +10,18 @@ import java.time.LocalDate;
 @lombok.AllArgsConstructor
 @lombok.RequiredArgsConstructor
 @lombok.EqualsAndHashCode(of = { "id" })
-public class Film {
+public class User {
     private Long id;
 
+    @NotNull
+    @Email
+    private String email;
+
     @NotBlank
+    private String login;
+
     private String name;
 
-    private String description;
-
     @NotNull
-    private LocalDate releaseDate;
-
-    @Positive
-    private int duration;
+    private LocalDate birthday;
 }
