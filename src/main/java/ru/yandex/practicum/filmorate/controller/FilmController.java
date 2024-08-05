@@ -24,24 +24,25 @@ public class FilmController {
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Пришел GET запрос /films");
-        log.info("Отправлен ответ GET /films с телом: " + films.values());
-        return films.values();
+        Collection<Film> allFilms = films.values();
+        log.info("Отправлен ответ GET /films с телом: {}", allFilms);
+        return allFilms;
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        log.info("Пришел POST запрос /films с телом: " + film);
+        log.info("Пришел POST запрос /films с телом: {}", film);
         validate(film);
         final long filmId = getNextId();
         film.setId(filmId);
         films.put(filmId, film);
-        log.info("Отправлен ответ POST /films с телом: " + film);
+        log.info("Отправлен ответ POST /films с телом: {}", film);
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        log.info("Пришел PUT запрос /films с телом: " + film);
+        log.info("Пришел PUT запрос /films с телом: {}", film);
         final Long filmId = film.getId();
         if (filmId == null) {
             log.info("Запрос PUT /films обработан не был по причине: Id должен быть указан");
@@ -50,10 +51,10 @@ public class FilmController {
         if (films.containsKey(filmId)) {
             validate(film);
             films.put(filmId, film);
-            log.info("Отправлен ответ PUT /films с телом: " + film);
+            log.info("Отправлен ответ PUT /films с телом: {}", film);
             return film;
         }
-        log.info("Запрос PUT /films обработан не был по причине: Фильм с id = " + filmId + " не найден");
+        log.info("Запрос PUT /films обработан не был по причине: Фильм с id = {} не найден", filmId);
         throw new NotFoundException("Фильм с id = " + filmId + " не найден");
     }
 
