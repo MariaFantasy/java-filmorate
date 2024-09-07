@@ -8,23 +8,22 @@ import org.slf4j.LoggerFactory;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final Map<Long, Film> films = new HashMap<>();
-    private long filmCounter = 0;
+    FilmStorage filmStorage = new InMemoryFilmStorage();
 
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Пришел GET запрос /films");
-        Collection<Film> allFilms = films.values();
+        Collection<Film> allFilms = filmStorage.findAll();
         log.info("Отправлен ответ GET /films с телом: {}", allFilms);
         return allFilms;
     }
@@ -33,9 +32,7 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.info("Пришел POST запрос /films с телом: {}", film);
         validate(film);
-        final long filmId = getNextId();
-        film.setId(filmId);
-        films.put(filmId, film);
+        filmStorage.create(film);
         log.info("Отправлен ответ POST /films с телом: {}", film);
         return film;
     }
@@ -48,18 +45,14 @@ public class FilmController {
             log.info("Запрос PUT /films обработан не был по причине: Id должен быть указан");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (films.containsKey(filmId)) {
+        if (filmStorage.findById(filmId) != null) {
             validate(film);
-            films.put(filmId, film);
+            filmStorage.update(film);
             log.info("Отправлен ответ PUT /films с телом: {}", film);
             return film;
         }
         log.info("Запрос PUT /films обработан не был по причине: Фильм с id = {} не найден", filmId);
         throw new NotFoundException("Фильм с id = " + filmId + " не найден");
-    }
-
-    private long getNextId() {
-        return ++filmCounter;
     }
 
     private void validate(final Film film) {
