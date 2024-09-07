@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -18,13 +20,12 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private final Map<Long, User> users = new HashMap<>();
-    private long userCounter = 0;
+    private UserStorage userStorage = new InMemoryUserStorage();
 
     @GetMapping
     public Collection<User> findAll() {
         log.info("Пришел GET запрос /users");
-        Collection<User> allUsers = users.values();
+        Collection<User> allUsers = userStorage.findAll();
         log.info("Отправлен ответ GET /users с телом: {}", allUsers);
         return allUsers;
     }
@@ -37,9 +38,7 @@ public class UserController {
             log.debug("Поле Name пустое, оно будет заполнено полем Login.");
             user.setName(user.getLogin());
         }
-        final long userId = getNextId();
-        user.setId(userId);
-        users.put(userId, user);
+        userStorage.create(user);
         log.info("Отправлен ответ POST /users с телом: {}", user);
         return user;
     }
@@ -52,22 +51,18 @@ public class UserController {
             log.info("Запрос PUT /users обработан не был по причине: Id должен быть указан");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (users.containsKey(userId)) {
+        if (userStorage.findById(userId) != null) {
             validate(user);
             if (user.getName() == null || user.getName().isBlank()) {
                 log.debug("Поле Name пустое, оно будет заполнено полем Login.");
                 user.setName(user.getLogin());
             }
-            users.put(userId, user);
+            userStorage.update(user);
             log.info("Отправлен ответ PUT /users с телом: {}", user);
             return user;
         }
         log.info("Запрос PUT /users обработан не был по причине: Фильм с id = {} не найден", userId);
         throw new NotFoundException("Пользователь с id = " + userId + " не найден");
-    }
-
-    private long getNextId() {
-        return ++userCounter;
     }
 
     private void validate(final User user) {

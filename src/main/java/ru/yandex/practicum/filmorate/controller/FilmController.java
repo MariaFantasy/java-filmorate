@@ -18,7 +18,7 @@ import java.util.Collection;
 @RequestMapping("/films")
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    FilmStorage filmStorage = new InMemoryFilmStorage();
+    private FilmStorage filmStorage = new InMemoryFilmStorage();
 
     @GetMapping
     public Collection<Film> findAll() {
