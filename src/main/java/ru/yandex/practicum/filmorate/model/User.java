@@ -27,4 +27,5 @@ public class User {
     private LocalDate birthday;
 
     private HashSet<Long> friends;
+    private HashSet<Long> likedFilms;
 }
