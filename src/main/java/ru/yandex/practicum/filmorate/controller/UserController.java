@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
@@ -15,6 +16,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,7 +37,11 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User findById(@PathVariable Long userId) {
-        return userStorage.findById(userId);
+        final User user = userStorage.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        return user;
     }
 
     @PostMapping
@@ -77,6 +83,12 @@ public class UserController {
     public User addFriendToUser(@PathVariable Long userId, @PathVariable Long friendId) {
         final User user = userStorage.findById(userId);
         final User friend = userStorage.findById(friendId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        if (friend == null) {
+            throw new NotFoundException("Пользователь с id = " + friendId + " не найден.");
+        }
         userService.addFiend(user, friend);
         return user;
     }
@@ -85,21 +97,37 @@ public class UserController {
     public User deleteFriendInUser(@PathVariable Long userId, @PathVariable Long friendId) {
         final User user = userStorage.findById(userId);
         final User friend = userStorage.findById(friendId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        if (friend == null) {
+            throw new NotFoundException("Пользователь с id = " + friendId + " не найден.");
+        }
         userService.deleteFriend(user, friend);
         return user;
     }
 
     @GetMapping("/{userId}/friends")
     public Collection<User> getUserFriends(@PathVariable Long userId) {
-        return userStorage.findById(userId).getFriends().stream()
+        final User user = userStorage.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        return user.getFriends().stream()
                 .map(userStorage::findById)
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
-    public Collection<User> getIntersectionOfFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+    public Collection<User> getIntersectionOfFriends(@PathVariable Long userId, @PathVariable Long otherId) {
         final User user = userStorage.findById(userId);
-        final User otherUser = userStorage.findById(otherUserId);
+        final User otherUser = userStorage.findById(otherId);
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        if (otherUser == null) {
+            throw new NotFoundException("Пользователь с id = " + otherId + " не найден.");
+        }
         return userService.getIntersectionOfFriends(user, otherUser);
     }
 
@@ -113,4 +141,23 @@ public class UserController {
             throw new ConditionsNotMetException("Дата рождения не может быть в будущем.");
         }
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationError(final ConditionsNotMetException e) {
+        return Map.of(
+                "error", "Объект не прошел валидацию.",
+                "errorMessage", e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFound(final NotFoundException e) {
+        return Map.of(
+                "error", "Объект не найден.",
+                "errorMessage", e.getMessage()
+        );
+    }
+
 }

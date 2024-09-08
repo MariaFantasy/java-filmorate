@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -10,10 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
     private static final long TOP_LIMIT_N = 10;
 
-    private FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
     public void likeFilm(Film film, User user) {
         film.getLikedUsers().add(user.getId());
