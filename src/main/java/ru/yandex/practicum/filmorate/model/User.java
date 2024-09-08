@@ -27,6 +27,6 @@ public class User {
     @NotNull
     private LocalDate birthday;
 
-    private Set<Long> friends = new HashSet<>();
-    private Set<Long> likedFilms = new HashSet<>();
+    private final Set<Long> friends = new HashSet<>();
+    private final Set<Long> likedFilms = new HashSet<>();
 }

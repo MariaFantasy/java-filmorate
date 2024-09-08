@@ -7,6 +7,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Set;
 import java.time.LocalDate;
@@ -14,7 +17,9 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
-    public static UserController userController = new UserController();
+    public static UserStorage userStorage = new InMemoryUserStorage();
+    public static UserService userService = new UserService(userStorage);
+    public static UserController userController = new UserController(userStorage, userService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
@@ -79,7 +84,7 @@ public class UserControllerTest {
 
     @Test
     public void testThrowsIfUserEmpty() {
-        User user = new User();
+        User user = new User(1L, null, "login", "name", LocalDate.of(2024, 1, 1));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
