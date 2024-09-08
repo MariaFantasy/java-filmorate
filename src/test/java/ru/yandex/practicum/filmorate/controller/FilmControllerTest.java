@@ -7,6 +7,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
 import java.util.Set;
 import java.time.LocalDate;
@@ -16,7 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
-    public static FilmController filmController = new FilmController();
+    public static FilmStorage filmStorage = new InMemoryFilmStorage();
+    public static FilmService filmService = new FilmService(filmStorage);
+    public static FilmController filmController = new FilmController(filmStorage);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test

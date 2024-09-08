@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Set;
 
 @lombok.Data
 @lombok.AllArgsConstructor
@@ -25,5 +26,5 @@ public class Film {
     @Positive
     private int duration;
 
-    private HashSet<Long> likedUsers;
+    private final Set<Long> likedUsers = new HashSet<>();
 }
