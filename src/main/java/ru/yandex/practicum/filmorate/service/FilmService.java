@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -27,10 +28,13 @@ public class FilmService {
         user.getLikedFilms().remove(film.getId());
     }
 
-    public List<Film> getTopFilmsByLike() {
+    public List<Film> getTopFilmsByLike(Long count) {
+        if (count == null) {
+            count = TOP_LIMIT_N;
+        }
         return filmStorage.findAll().stream()
-                .sorted(Comparator.comparingLong(film -> film.getLikedUsers().size()))
-                .limit(TOP_LIMIT_N)
+                .sorted(Comparator.comparingLong(film -> -film.getLikedUsers().size()))
+                .limit(count)
                 .collect(Collectors.toList());
     }
 }
