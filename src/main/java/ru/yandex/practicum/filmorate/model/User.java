@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Set;
 
 @lombok.Data
 @lombok.AllArgsConstructor
@@ -26,6 +27,6 @@ public class User {
     @NotNull
     private LocalDate birthday;
 
-    private HashSet<Long> friends;
-    private HashSet<Long> likedFilms;
+    private Set<Long> friends = new HashSet<>();
+    private Set<Long> likedFilms = new HashSet<>();
 }

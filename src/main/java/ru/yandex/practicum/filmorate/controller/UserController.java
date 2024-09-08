@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -20,6 +23,7 @@ import java.util.Collection;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserStorage userStorage;
+    private final UserService userService;
 
     @GetMapping
     public Collection<User> findAll() {
@@ -67,6 +71,36 @@ public class UserController {
         }
         log.info("Запрос PUT /users обработан не был по причине: Фильм с id = {} не найден", userId);
         throw new NotFoundException("Пользователь с id = " + userId + " не найден");
+    }
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    public User addFriendToUser(@PathVariable Long userId, @PathVariable Long friendId) {
+        final User user = userStorage.findById(userId);
+        final User friend = userStorage.findById(friendId);
+        userService.addFiend(user, friend);
+        return user;
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public User deleteFriendInUser(@PathVariable Long userId, @PathVariable Long friendId) {
+        final User user = userStorage.findById(userId);
+        final User friend = userStorage.findById(friendId);
+        userService.deleteFriend(user, friend);
+        return user;
+    }
+
+    @GetMapping("/{userId}/friends")
+    public Collection<User> getUserFriends(@PathVariable Long userId) {
+        return userStorage.findById(userId).getFriends().stream()
+                .map(userStorage::findById)
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public Collection<User> getIntersectionOfFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+        final User user = userStorage.findById(userId);
+        final User otherUser = userStorage.findById(otherUserId);
+        return userService.getIntersectionOfFriends(user, otherUser);
     }
 
     private void validate(final User user) {
