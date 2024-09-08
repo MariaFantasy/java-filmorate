@@ -29,6 +29,11 @@ public class UserController {
         return allUsers;
     }
 
+    @GetMapping("/{userId}")
+    public User findById(@PathVariable Long userId) {
+        return userStorage.findById(userId);
+    }
+
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Пришел POST запрос /users с телом: {}", user);
