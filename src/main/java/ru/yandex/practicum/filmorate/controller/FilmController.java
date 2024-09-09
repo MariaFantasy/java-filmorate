@@ -34,6 +34,18 @@ public class FilmController {
         return allFilms;
     }
 
+    @GetMapping("/{filmId}")
+    public Film findById(@PathVariable Long filmId) {
+        log.info("Пришел GET запрос /films/{}", filmId);
+        final Film film = filmStorage.findById(filmId);
+        if (film == null) {
+            log.info("Запрос GET /films/{} обработан не был по причине: Фильм с id = {} не найден", filmId, filmId);
+            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
+        }
+        log.info("Отправлен ответ GET /films/{} с телом: {}", filmId, film);
+        return film;
+    }
+
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Пришел POST запрос /films с телом: {}", film);
