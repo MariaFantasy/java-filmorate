@@ -63,35 +63,46 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     public Film addLike(@PathVariable Long filmId, @PathVariable Long userId) {
+        log.info("Пришел PUT запрос /films/{}/like/{}", filmId, userId);
         final Film film = filmStorage.findById(filmId);
         final User user = userStorage.findById(userId);
         if (film == null) {
+            log.info("Запрос PUT /films/{}/like/{} обработан не был по причине: Фильм с id = {} не найден", filmId, userId, filmId);
             throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
         }
         if (user == null) {
+            log.info("Запрос PUT /films/{}/like/{} обработан не был по причине: Пользователь с id = {} не найден", filmId, userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         filmService.likeFilm(film, user);
+        log.info("Отправлен ответ PUT /films/{}/like/{} с телом: {}", filmId, userId, film);
         return film;
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     public Film deleteLike(@PathVariable Long filmId, @PathVariable Long userId) {
+        log.info("Пришел DELETE запрос /films/{}/like/{}", filmId, userId);
         final Film film = filmStorage.findById(filmId);
         final User user = userStorage.findById(userId);
         if (film == null) {
+            log.info("Запрос DELETE /films/{}/like/{} обработан не был по причине: Фильм с id = {} не найден", filmId, userId, filmId);
             throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
         }
         if (user == null) {
+            log.info("Запрос DELETE /films/{}/like/{} обработан не был по причине: Пользователь с id = {} не найден", filmId, userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         filmService.unlikeFilm(film, user);
+        log.info("Отправлен ответ DELETE /films/{}/like/{} с телом: {}", filmId, userId, film);
         return film;
     }
 
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(required = false) Long count) {
-        return filmService.getTopFilmsByLike(count);
+        log.info("Пришел GET запрос /popular/count={}", count);
+        Collection<Film> topFilms = filmService.getTopFilmsByLike(count);
+        log.info("Отправлен ответ GET /popular/count={} с телом: {}", count, topFilms);
+        return topFilms;
     }
 
     private void validate(final Film film) {
