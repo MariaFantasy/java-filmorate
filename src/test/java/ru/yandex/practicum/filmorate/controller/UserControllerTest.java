@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import jakarta.validation.ConstraintViolation;
@@ -94,5 +95,102 @@ public class UserControllerTest {
         User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User createdUser = userController.create(user);
         assertEquals(user.getName(), createdUser.getName(), "Expected equals users");
+    }
+
+    @Test
+    public void testAddFriendNormal() {
+        User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdUser = userController.create(user);
+        User createdFriend = userController.create(friend);
+        userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
+        assertTrue(createdUser.getFriends().contains(createdFriend.getId()));
+        assertTrue(createdFriend.getFriends().contains(createdUser.getId()));
+    }
+
+    @Test
+    public void testAddFriendWhenNotFoundUser() {
+        User user = new User(10000L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(100000L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdFriend = userController.create(friend);
+        assertThrows(NotFoundException.class, () -> userController.addFriendToUser(user.getId(), createdFriend.getId()));
+    }
+
+    @Test
+    public void testAddFriendWhenNotFoundFriend() {
+        User user = new User(10000L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(100000L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdUser = userController.create(user);
+        assertThrows(NotFoundException.class, () -> userController.addFriendToUser(createdUser.getId(), friend.getId()));
+    }
+
+    @Test
+    public void testDeleteFriendNormal() {
+        User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdUser = userController.create(user);
+        User createdFriend = userController.create(friend);
+        userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
+        userController.deleteFriendInUser(createdUser.getId(), createdFriend.getId());
+        assertFalse(createdUser.getFriends().contains(createdFriend.getId()));
+        assertFalse(createdFriend.getFriends().contains(createdUser.getId()));
+    }
+
+    @Test
+    public void testDeleteFriendWhenNotFoundUser() {
+        User user = new User(10000L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdFriend = userController.create(friend);
+        assertThrows(NotFoundException.class, () -> userController.deleteFriendInUser(user.getId(), createdFriend.getId()));
+    }
+
+    @Test
+    public void testDeleteFriendWhenNotFoundFriend() {
+        User user = new User(10000L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdFriend = userController.create(friend);
+        assertThrows(NotFoundException.class, () -> userController.deleteFriendInUser(user.getId(), createdFriend.getId()));
+    }
+
+    @Test
+    public void testDeleteFriendWhenNotFoundFriendsInUser() {
+        User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdUser = userController.create(user);
+        User createdFriend = userController.create(friend);
+        userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
+        userController.deleteFriendInUser(createdUser.getId(), createdFriend.getId());
+        assertEquals(0, createdUser.getFriends().size());
+    }
+
+    @Test
+    public void testGetListOfFriends() {
+        User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User friend = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdUser = userController.create(user);
+        User createdFriend = userController.create(friend);
+        userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
+        assertEquals(1, createdUser.getFriends().size());
+        assertTrue(createdUser.getFriends().contains(createdFriend.getId()));
+    }
+
+    @Test
+    public void TestGetIntersectionListOfFriends() {
+        User user1 = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
+        User user2 = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User user3 = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User user4 = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User user5 = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
+        User createdUser1 = userController.create(user1);
+        User createdUser2 = userController.create(user2);
+        User createdUser3 = userController.create(user3);
+        User createdUser4 = userController.create(user4);
+        User createdUser5 = userController.create(user5);
+        userController.addFriendToUser(createdUser1.getId(), createdUser3.getId());
+        userController.addFriendToUser(createdUser1.getId(), createdUser4.getId());
+        userController.addFriendToUser(createdUser2.getId(), createdUser3.getId());
+        userController.addFriendToUser(createdUser2.getId(), createdUser5.getId());
+        assertEquals(1, userController.getIntersectionOfFriends(createdUser1.getId(), createdUser2.getId()).size());
+        assertTrue(userController.getIntersectionOfFriends(createdUser1.getId(), createdUser2.getId()).contains(createdUser3));
     }
 }
