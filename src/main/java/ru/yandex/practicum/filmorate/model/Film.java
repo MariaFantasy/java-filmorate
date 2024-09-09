@@ -15,15 +15,15 @@ import java.util.Set;
 public class Film {
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
 
     private String description;
 
-    @NotNull
+    @NotNull(message = "Дата релиза фильма не может быть пустой")
     private LocalDate releaseDate;
 
-    @Positive
+    @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private int duration;
 
     private final Set<Long> likedUsers = new HashSet<>();
