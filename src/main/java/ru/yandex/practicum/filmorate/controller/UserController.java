@@ -35,10 +35,13 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User findById(@PathVariable Long userId) {
+        log.info("Пришел GET запрос /users/{}", userId);
         final User user = userStorage.findById(userId);
         if (user == null) {
+            log.info("Запрос GET /users/{} обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
+        log.info("Отправлен ответ GET /users/{} с телом: {}", userId, user);
         return user;
     }
 
@@ -73,60 +76,77 @@ public class UserController {
             log.info("Отправлен ответ PUT /users с телом: {}", user);
             return user;
         }
-        log.info("Запрос PUT /users обработан не был по причине: Фильм с id = {} не найден", userId);
+        log.info("Запрос PUT /users обработан не был по причине: Пользователь с id = {} не найден", userId);
         throw new NotFoundException("Пользователь с id = " + userId + " не найден");
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
     public User addFriendToUser(@PathVariable Long userId, @PathVariable Long friendId) {
+        log.info("Пришел PUT запрос /users/{}/friends/{}", userId, friendId);
         final User user = userStorage.findById(userId);
         final User friend = userStorage.findById(friendId);
         if (user == null) {
+            log.info("Запрос PUT /users/{}/friends/{} обработан не был по причине: Пользователь с id = {} не найден", userId, friendId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         if (friend == null) {
+            log.info("Запрос PUT /users/{}/friends/{} обработан не был по причине: Пользователь с id = {} не найден", userId, friendId, friendId);
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден.");
         }
         userService.addFiend(user, friend);
+        log.info("Отправлен ответ PUT /users/{}/friends/{} с телом: {}", userId, friendId, user);
         return user;
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     public User deleteFriendInUser(@PathVariable Long userId, @PathVariable Long friendId) {
+        log.info("Пришел DELETE запрос /users/{}/friends/{}", userId, friendId);
         final User user = userStorage.findById(userId);
         final User friend = userStorage.findById(friendId);
         if (user == null) {
+            log.info("Запрос DELETE /users/{}/friends/{} обработан не был по причине: Пользователь с id = {} не найден", userId, friendId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         if (friend == null) {
+            log.info("Запрос DELETE /users/{}/friends/{} обработан не был по причине: Пользователь с id = {} не найден", userId, friendId, friendId);
             throw new NotFoundException("Пользователь с id = " + friendId + " не найден.");
         }
         userService.deleteFriend(user, friend);
+        log.info("Отправлен ответ DELETE /users/{}/friends/{} с телом: {}", userId, friendId, user);
         return user;
     }
 
     @GetMapping("/{userId}/friends")
     public Collection<User> getUserFriends(@PathVariable Long userId) {
+        log.info("Пришел GET запрос /users/{}/friends", userId);
         final User user = userStorage.findById(userId);
         if (user == null) {
+            log.info("Запрос GET /users/{}/friends обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        return user.getFriends().stream()
+        Collection<User> friends = user.getFriends().stream()
                 .map(userStorage::findById)
                 .collect(Collectors.toCollection(HashSet::new));
+        log.info("Отправлен ответ GET /users/{}/friends с телом: {}", userId, friends);
+        return friends;
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
     public Collection<User> getIntersectionOfFriends(@PathVariable Long userId, @PathVariable Long otherId) {
+        log.info("Пришел GET запрос /users/{}/friends/common/{}", userId, otherId);
         final User user = userStorage.findById(userId);
         final User otherUser = userStorage.findById(otherId);
         if (user == null) {
+            log.info("Запрос GET /users/{}/friends/common/{} обработан не был по причине: Пользователь с id = {} не найден", userId, otherId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         if (otherUser == null) {
+            log.info("Запрос GET /users/{}/friends/common/{} обработан не был по причине: Пользователь с id = {} не найден", userId, otherId, otherId);
             throw new NotFoundException("Пользователь с id = " + otherId + " не найден.");
         }
-        return userService.getIntersectionOfFriends(user, otherUser);
+        Collection<User> intersectionOfFriends = userService.getIntersectionOfFriends(user, otherUser);
+        log.info("Отправлен ответ GET /users/{}/friends/common/{} с телом: {}", userId, otherId, intersectionOfFriends);
+        return intersectionOfFriends;
     }
 
     private void validate(final User user) {
