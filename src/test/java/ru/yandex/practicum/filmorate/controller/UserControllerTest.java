@@ -175,7 +175,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void TestGetIntersectionListOfFriends() {
+    public void testGetIntersectionListOfFriends() {
         User user1 = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User user2 = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
         User user3 = new User(1L, "myemail2@gmail.com", "login2", "name2", LocalDate.of(2024, 1, 1));
