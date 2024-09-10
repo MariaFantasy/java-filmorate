@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -22,13 +21,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @GetMapping
     public Collection<User> findAll() {
         log.info("Пришел GET запрос /users");
-        Collection<User> allUsers = userStorage.findAll();
+        Collection<User> allUsers = userService.findAll();
         log.info("Отправлен ответ GET /users с телом: {}", allUsers);
         return allUsers;
     }
@@ -36,7 +34,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public User findById(@PathVariable Long userId) {
         log.info("Пришел GET запрос /users/{}", userId);
-        final User user = userStorage.findById(userId);
+        final User user = userService.findById(userId);
         if (user == null) {
             log.info("Запрос GET /users/{} обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
@@ -53,7 +51,7 @@ public class UserController {
             log.debug("Поле Name пустое, оно будет заполнено полем Login.");
             user.setName(user.getLogin());
         }
-        userStorage.create(user);
+        userService.create(user);
         log.info("Отправлен ответ POST /users с телом: {}", user);
         return user;
     }
@@ -66,13 +64,13 @@ public class UserController {
             log.info("Запрос PUT /users обработан не был по причине: Id должен быть указан");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (userStorage.findById(userId) != null) {
+        if (userService.findById(userId) != null) {
             validate(user);
             if (user.getName() == null || user.getName().isBlank()) {
                 log.debug("Поле Name пустое, оно будет заполнено полем Login.");
                 user.setName(user.getLogin());
             }
-            userStorage.update(user);
+            userService.update(user);
             log.info("Отправлен ответ PUT /users с телом: {}", user);
             return user;
         }
@@ -83,8 +81,8 @@ public class UserController {
     @PutMapping("/{userId}/friends/{friendId}")
     public User addFriendToUser(@PathVariable Long userId, @PathVariable Long friendId) {
         log.info("Пришел PUT запрос /users/{}/friends/{}", userId, friendId);
-        final User user = userStorage.findById(userId);
-        final User friend = userStorage.findById(friendId);
+        final User user = userService.findById(userId);
+        final User friend = userService.findById(friendId);
         if (user == null) {
             log.info("Запрос PUT /users/{}/friends/{} обработан не был по причине: Пользователь с id = {} не найден", userId, friendId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
@@ -101,8 +99,8 @@ public class UserController {
     @DeleteMapping("/{userId}/friends/{friendId}")
     public User deleteFriendInUser(@PathVariable Long userId, @PathVariable Long friendId) {
         log.info("Пришел DELETE запрос /users/{}/friends/{}", userId, friendId);
-        final User user = userStorage.findById(userId);
-        final User friend = userStorage.findById(friendId);
+        final User user = userService.findById(userId);
+        final User friend = userService.findById(friendId);
         if (user == null) {
             log.info("Запрос DELETE /users/{}/friends/{} обработан не был по причине: Пользователь с id = {} не найден", userId, friendId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
@@ -119,13 +117,13 @@ public class UserController {
     @GetMapping("/{userId}/friends")
     public Collection<User> getUserFriends(@PathVariable Long userId) {
         log.info("Пришел GET запрос /users/{}/friends", userId);
-        final User user = userStorage.findById(userId);
+        final User user = userService.findById(userId);
         if (user == null) {
             log.info("Запрос GET /users/{}/friends обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         Collection<User> friends = user.getFriends().stream()
-                .map(userStorage::findById)
+                .map(userService::findById)
                 .collect(Collectors.toCollection(HashSet::new));
         log.info("Отправлен ответ GET /users/{}/friends с телом: {}", userId, friends);
         return friends;
@@ -134,8 +132,8 @@ public class UserController {
     @GetMapping("/{userId}/friends/common/{otherId}")
     public Collection<User> getIntersectionOfFriends(@PathVariable Long userId, @PathVariable Long otherId) {
         log.info("Пришел GET запрос /users/{}/friends/common/{}", userId, otherId);
-        final User user = userStorage.findById(userId);
-        final User otherUser = userStorage.findById(otherId);
+        final User user = userService.findById(userId);
+        final User otherUser = userService.findById(otherId);
         if (user == null) {
             log.info("Запрос GET /users/{}/friends/common/{} обработан не был по причине: Пользователь с id = {} не найден", userId, otherId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
