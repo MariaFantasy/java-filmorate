@@ -13,19 +13,19 @@ import java.util.stream.Collectors;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationError(final ConditionsNotMetException e) {
-        return Map.of(
-                "error", "Объект не прошел валидацию.",
-                "errorMessage", e.getMessage()
+    public ErrorResponse handleValidationError(final ConditionsNotMetException e) {
+        return new ErrorResponse(
+            "Объект не прошел валидацию.",
+            e.getMessage()
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationError(final MethodArgumentNotValidException e) {
-        return Map.of(
-                "error", "Объект не прошел валидацию.",
-                "errorMessage", e.getBindingResult().getFieldErrors().stream()
+    public ErrorResponse handleValidationError(final MethodArgumentNotValidException e) {
+        return new ErrorResponse(
+                "Объект не прошел валидацию.",
+                e.getBindingResult().getFieldErrors().stream()
                         .map(error -> error.getDefaultMessage())
                         .collect(Collectors.joining("\n"))
         );
@@ -33,10 +33,19 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFound(final NotFoundException e) {
-        return Map.of(
-                "error", "Объект не найден.",
-                "errorMessage", e.getMessage()
+    public ErrorResponse handleNotFound(final NotFoundException e) {
+        return new ErrorResponse(
+                "Объект не найден.",
+                e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleThrowable(final Throwable e) {
+        return new ErrorResponse(
+                "Возникла непредвиденная ошибка.",
+                e.getMessage()
         );
     }
 }
