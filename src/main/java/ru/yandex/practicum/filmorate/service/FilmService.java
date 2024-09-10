@@ -19,12 +19,10 @@ public class FilmService {
 
     public void likeFilm(Film film, User user) {
         film.getLikedUsers().add(user.getId());
-        user.getLikedFilms().add(film.getId());
     }
 
     public void unlikeFilm(Film film, User user) {
         film.getLikedUsers().remove(user.getId());
-        user.getLikedFilms().remove(film.getId());
     }
 
     public List<Film> getTopFilmsByLike(Long count) {
