@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -17,6 +18,7 @@ public class FilmService {
     private static final long TOP_LIMIT_N = 10;
 
     private final FilmStorage filmStorage;
+    private final UserService userService;
 
     public Collection<Film> findAll() {
         return filmStorage.findAll();
@@ -34,12 +36,30 @@ public class FilmService {
         filmStorage.update(film);
     }
 
-    public void likeFilm(Film film, User user) {
+    public Film likeFilm(Long filmId, Long userId) {
+        final Film film = filmStorage.findById(filmId);
+        final User user = userService.findById(userId);
+        if (film == null) {
+            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
+        }
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
         film.getLikedUsers().add(user.getId());
+        return film;
     }
 
-    public void unlikeFilm(Film film, User user) {
+    public Film unlikeFilm(Long filmId, Long userId) {
+        final Film film = filmStorage.findById(filmId);
+        final User user = userService.findById(userId);
+        if (film == null) {
+            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
+        }
+        if (user == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
         film.getLikedUsers().remove(user.getId());
+        return film;
     }
 
     public List<Film> getTopFilmsByLike(Long count) {

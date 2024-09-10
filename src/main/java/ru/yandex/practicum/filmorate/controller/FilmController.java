@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -23,7 +20,6 @@ import java.util.Collection;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
-    private final UserStorage userStorage;
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -75,17 +71,7 @@ public class FilmController {
     @PutMapping("/{filmId}/like/{userId}")
     public Film addLike(@PathVariable Long filmId, @PathVariable Long userId) {
         log.info("Пришел PUT запрос /films/{}/like/{}", filmId, userId);
-        final Film film = filmService.findById(filmId);
-        final User user = userStorage.findById(userId);
-        if (film == null) {
-            log.info("Запрос PUT /films/{}/like/{} обработан не был по причине: Фильм с id = {} не найден", filmId, userId, filmId);
-            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
-        }
-        if (user == null) {
-            log.info("Запрос PUT /films/{}/like/{} обработан не был по причине: Пользователь с id = {} не найден", filmId, userId, userId);
-            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
-        }
-        filmService.likeFilm(film, user);
+        Film film = filmService.likeFilm(filmId, userId);
         log.info("Отправлен ответ PUT /films/{}/like/{} с телом: {}", filmId, userId, film);
         return film;
     }
@@ -93,17 +79,7 @@ public class FilmController {
     @DeleteMapping("/{filmId}/like/{userId}")
     public Film deleteLike(@PathVariable Long filmId, @PathVariable Long userId) {
         log.info("Пришел DELETE запрос /films/{}/like/{}", filmId, userId);
-        final Film film = filmService.findById(filmId);
-        final User user = userStorage.findById(userId);
-        if (film == null) {
-            log.info("Запрос DELETE /films/{}/like/{} обработан не был по причине: Фильм с id = {} не найден", filmId, userId, filmId);
-            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
-        }
-        if (user == null) {
-            log.info("Запрос DELETE /films/{}/like/{} обработан не был по причине: Пользователь с id = {} не найден", filmId, userId, userId);
-            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
-        }
-        filmService.unlikeFilm(film, user);
+        Film film = filmService.unlikeFilm(filmId, userId);
         log.info("Отправлен ответ DELETE /films/{}/like/{} с телом: {}", filmId, userId, film);
         return film;
     }
