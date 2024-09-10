@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,22 @@ public class FilmService {
     private static final long TOP_LIMIT_N = 10;
 
     private final FilmStorage filmStorage;
+
+    public Collection<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film findById(Long filmId) {
+        return filmStorage.findById(filmId);
+    }
+
+    public void create(Film film) {
+        filmStorage.create(film);
+    }
+
+    public void update(Film film) {
+        filmStorage.update(film);
+    }
 
     public void likeFilm(Film film, User user) {
         film.getLikedUsers().add(user.getId());

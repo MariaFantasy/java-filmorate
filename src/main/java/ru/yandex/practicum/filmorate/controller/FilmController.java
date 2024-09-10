@@ -22,14 +22,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
     private final UserStorage userStorage;
 
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Пришел GET запрос /films");
-        Collection<Film> allFilms = filmStorage.findAll();
+        Collection<Film> allFilms = filmService.findAll();
         log.info("Отправлен ответ GET /films с телом: {}", allFilms);
         return allFilms;
     }
@@ -37,7 +36,7 @@ public class FilmController {
     @GetMapping("/{filmId}")
     public Film findById(@PathVariable Long filmId) {
         log.info("Пришел GET запрос /films/{}", filmId);
-        final Film film = filmStorage.findById(filmId);
+        final Film film = filmService.findById(filmId);
         if (film == null) {
             log.info("Запрос GET /films/{} обработан не был по причине: Фильм с id = {} не найден", filmId, filmId);
             throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
@@ -50,7 +49,7 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.info("Пришел POST запрос /films с телом: {}", film);
         validate(film);
-        filmStorage.create(film);
+        filmService.create(film);
         log.info("Отправлен ответ POST /films с телом: {}", film);
         return film;
     }
@@ -63,9 +62,9 @@ public class FilmController {
             log.info("Запрос PUT /films обработан не был по причине: Id должен быть указан");
             throw new ConditionsNotMetException("Id должен быть указан");
         }
-        if (filmStorage.findById(filmId) != null) {
+        if (filmService.findById(filmId) != null) {
             validate(film);
-            filmStorage.update(film);
+            filmService.update(film);
             log.info("Отправлен ответ PUT /films с телом: {}", film);
             return film;
         }
@@ -76,7 +75,7 @@ public class FilmController {
     @PutMapping("/{filmId}/like/{userId}")
     public Film addLike(@PathVariable Long filmId, @PathVariable Long userId) {
         log.info("Пришел PUT запрос /films/{}/like/{}", filmId, userId);
-        final Film film = filmStorage.findById(filmId);
+        final Film film = filmService.findById(filmId);
         final User user = userStorage.findById(userId);
         if (film == null) {
             log.info("Запрос PUT /films/{}/like/{} обработан не был по причине: Фильм с id = {} не найден", filmId, userId, filmId);
@@ -94,7 +93,7 @@ public class FilmController {
     @DeleteMapping("/{filmId}/like/{userId}")
     public Film deleteLike(@PathVariable Long filmId, @PathVariable Long userId) {
         log.info("Пришел DELETE запрос /films/{}/like/{}", filmId, userId);
-        final Film film = filmStorage.findById(filmId);
+        final Film film = filmService.findById(filmId);
         final User user = userStorage.findById(userId);
         if (film == null) {
             log.info("Запрос DELETE /films/{}/like/{} обработан не был по причине: Фильм с id = {} не найден", filmId, userId, filmId);
