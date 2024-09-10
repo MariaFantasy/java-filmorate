@@ -10,6 +10,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -22,10 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmControllerTest {
-    public static FilmStorage filmStorage = new InMemoryFilmStorage();
-    public static FilmService filmService = new FilmService(filmStorage);
     public static UserStorage userStorage = new InMemoryUserStorage();
-    public static FilmController filmController = new FilmController(filmStorage, filmService, userStorage);
+    public static UserService userService = new UserService(userStorage);
+    public static FilmStorage filmStorage = new InMemoryFilmStorage();
+    public static FilmService filmService = new FilmService(filmStorage, userService);
+    public static FilmController filmController = new FilmController(filmService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
@@ -82,7 +84,6 @@ public class FilmControllerTest {
         Film createdFilm = filmController.create(film);
         User createdUser = userStorage.create(user);
         filmController.addLike(createdFilm.getId(), createdUser.getId());
-        assertTrue(createdUser.getLikedFilms().contains(createdFilm.getId()));
         assertTrue(createdFilm.getLikedUsers().contains(createdUser.getId()));
     }
 
@@ -110,7 +111,6 @@ public class FilmControllerTest {
         User createdUser = userStorage.create(user);
         filmController.addLike(createdFilm.getId(), createdUser.getId());
         filmController.deleteLike(createdFilm.getId(), createdUser.getId());
-        assertFalse(createdUser.getLikedFilms().contains(createdFilm.getId()));
         assertFalse(createdFilm.getLikedUsers().contains(createdUser.getId()));
     }
 
