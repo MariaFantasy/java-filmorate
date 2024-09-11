@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.exception;
 
 public class ErrorResponse {
-    String error;
-    String errorMessage;
+    private String error;
+    private String errorMessage;
 
     public ErrorResponse(String error, String errorMessage) {
         this.error = error;
