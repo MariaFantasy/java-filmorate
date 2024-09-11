@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,5 +28,6 @@ public class User {
     @NotNull(message = "Дата рождения пользователя не может быть пустой")
     private LocalDate birthday;
 
+    @JsonIgnore
     private final Set<Long> friends = new HashSet<>();
 }
