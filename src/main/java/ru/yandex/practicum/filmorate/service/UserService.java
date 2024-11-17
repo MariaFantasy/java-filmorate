@@ -31,18 +31,18 @@ public class UserService {
     }
 
     public void addFiend(User user, User newFriend) {
-        user.getFriends().add(newFriend.getId());
-        newFriend.getFriends().add(user.getId());
+        user.getAcceptedFriends().add(newFriend.getId());
+        newFriend.getAcceptedFriends().add(user.getId());
     }
 
     public void deleteFriend(User user, User oldFriend) {
-        user.getFriends().remove(oldFriend.getId());
-        oldFriend.getFriends().remove(user.getId());
+        user.getAcceptedFriends().remove(oldFriend.getId());
+        oldFriend.getAcceptedFriends().remove(user.getId());
     }
 
     public Set<User> getIntersectionOfFriends(User user1, User user2) {
-        final Set<Long> user1Friends = user1.getFriends();
-        final Set<Long> user2Friends = user2.getFriends();
+        final Set<Long> user1Friends = user1.getAcceptedFriends();
+        final Set<Long> user2Friends = user2.getAcceptedFriends();
         return user1Friends.stream()
                 .filter(user2Friends::contains)
                 .map(userStorage::findById)

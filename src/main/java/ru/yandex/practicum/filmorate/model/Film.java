@@ -19,6 +19,10 @@ public class Film {
     @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
 
+    private Rating rating;
+
+    private Set<Genre> genres;
+
     private String description;
 
     @NotNull(message = "Дата релиза фильма не может быть пустой")
