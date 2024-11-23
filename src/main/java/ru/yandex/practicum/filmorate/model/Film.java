@@ -19,7 +19,7 @@ public class Film {
     @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
 
-    private Rating rating;
+    private Mpa mpa;
 
     private Set<Genre> genres;
 
@@ -32,5 +32,5 @@ public class Film {
     private int duration;
 
     @JsonIgnore
-    private final Set<Long> likedUsers = new HashSet<>();
+    private Set<Long> likedUsers = new HashSet<>();
 }
