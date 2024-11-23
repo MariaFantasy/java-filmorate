@@ -45,9 +45,9 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.info("Пришел POST запрос /films с телом: {}", film);
         validate(film);
-        filmService.create(film);
-        log.info("Отправлен ответ POST /films с телом: {}", film);
-        return film;
+        Film createdFilm = filmService.create(film);
+        log.info("Отправлен ответ POST /films с телом: {}", createdFilm);
+        return createdFilm;
     }
 
     @PutMapping
@@ -60,9 +60,9 @@ public class FilmController {
         }
         if (filmService.findById(filmId) != null) {
             validate(film);
-            filmService.update(film);
-            log.info("Отправлен ответ PUT /films с телом: {}", film);
-            return film;
+            Film updatedFilm = filmService.update(film);
+            log.info("Отправлен ответ PUT /films с телом: {}", updatedFilm);
+            return updatedFilm;
         }
         log.info("Запрос PUT /films обработан не был по причине: Фильм с id = {} не найден", filmId);
         throw new NotFoundException("Фильм с id = " + filmId + " не найден");

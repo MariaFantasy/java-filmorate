@@ -13,8 +13,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -122,9 +120,7 @@ public class UserController {
             log.info("Запрос GET /users/{}/friends обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        Collection<User> friends = user.getAcceptedFriends().stream()
-                .map(userService::findById)
-                .collect(Collectors.toCollection(HashSet::new));
+        Collection<User> friends = userService.getFriends(user);
         log.info("Отправлен ответ GET /users/{}/friends с телом: {}", userId, friends);
         return friends;
     }
