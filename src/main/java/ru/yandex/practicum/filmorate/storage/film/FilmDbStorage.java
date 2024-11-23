@@ -134,8 +134,7 @@ public class FilmDbStorage implements FilmStorage {
         try {
             Film film = jdbc.queryForObject(FIND_BY_ID_QUERY, mapper, id);
             return film;
-        }
-        catch (EmptyResultDataAccessException ignored) {
+        } catch (EmptyResultDataAccessException ignored) {
             return null;
         }
     }
