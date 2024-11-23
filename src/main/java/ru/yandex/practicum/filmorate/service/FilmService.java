@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -8,17 +8,19 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class FilmService {
     private static final long TOP_LIMIT_N = 10;
 
     private final FilmStorage filmStorage;
     private final UserService userService;
+
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
+    }
 
     public Collection<Film> findAll() {
         return filmStorage.findAll();
@@ -28,12 +30,12 @@ public class FilmService {
         return filmStorage.findById(filmId);
     }
 
-    public void create(Film film) {
-        filmStorage.create(film);
+    public Film create(Film film) {
+        return filmStorage.create(film);
     }
 
-    public void update(Film film) {
-        filmStorage.update(film);
+    public Film update(Film film) {
+        return filmStorage.update(film);
     }
 
     public Film likeFilm(Long filmId, Long userId) {
@@ -45,7 +47,7 @@ public class FilmService {
         if (user == null) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        film.getLikedUsers().add(user.getId());
+        filmStorage.addLike(film, user);
         return film;
     }
 
@@ -58,7 +60,7 @@ public class FilmService {
         if (user == null) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        film.getLikedUsers().remove(user.getId());
+        filmStorage.deleteLike(film, user);
         return film;
     }
 
@@ -66,9 +68,6 @@ public class FilmService {
         if (count == null) {
             count = TOP_LIMIT_N;
         }
-        return filmStorage.findAll().stream()
-                .sorted(Comparator.comparingLong(film -> -film.getLikedUsers().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getTopFilmsByLike(count);
     }
 }
