@@ -24,8 +24,6 @@ import java.util.List;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
-    private final MpaService mpaService;
-    private final GenreService genreService;
 
     private static final String FIND_ALL_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, ARRAY(SELECT g.genre_id FROM film AS ff INNER JOIN film_genre AS g ON ff.film_id = g.film_id WHERE ff.film_id = f.film_id ORDER BY g.genre_id) AS genres FROM film AS f GROUP BY f.film_id";
     private static final String FIND_BY_ID_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, ARRAY(SELECT g.genre_id FROM film AS ff INNER JOIN film_genre AS g ON ff.film_id = g.film_id WHERE ff.film_id = f.film_id ORDER BY g.genre_id) AS genres FROM film AS f WHERE f.film_id = ? GROUP BY f.film_id";
@@ -41,23 +39,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film create(Film film) {
-        if (film.getMpa() != null) {
-            try {
-                mpaService.findById(film.getMpa().getId());
-            } catch (NotFoundException e) {
-                throw new DatabaseException(e.getMessage());
-            }
-        }
-        if (film.getGenres() != null) {
-            for (Genre genre : film.getGenres()) {
-                try {
-                    genreService.findById(genre.getId());
-                } catch (NotFoundException e) {
-                    throw new DatabaseException(e.getMessage());
-                }
-            }
-        }
-
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
             PreparedStatement ps = connection
@@ -84,23 +65,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        if (film.getMpa() != null) {
-            try {
-                mpaService.findById(film.getMpa().getId());
-            } catch (NotFoundException e) {
-                throw new DatabaseException(e.getMessage());
-            }
-        }
-        if (film.getGenres() != null) {
-            for (Genre genre : film.getGenres()) {
-                try {
-                    genreService.findById(genre.getId());
-                } catch (NotFoundException e) {
-                    throw new DatabaseException(e.getMessage());
-                }
-            }
-        }
-
         jdbc.update(UPDATE_BY_ID_QUERY,
                 film.getName(),
                 film.getDescription(),
@@ -110,7 +74,6 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
 
         jdbc.update(DELETE_BY_ID_GENRE_QUERY, film.getId());
-        jdbc.update(DELETE_BY_ID_LIKE_QUERY, film.getId());
 
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {
