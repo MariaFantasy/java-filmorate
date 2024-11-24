@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -36,7 +37,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film findById(Long id) {
-        return films.get(id);
+        Film film = films.get(id);
+        if (film == null) {
+            throw new NotFoundException("Фильм с id = " + id + " не найден.");
+        }
+        return film;
     }
 
     @Override
