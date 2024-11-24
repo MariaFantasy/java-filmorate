@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.mapper.UserRowMapper;
 
@@ -66,7 +67,7 @@ public class UserDbStorage implements UserStorage {
             User user = jdbc.queryForObject(FIND_BY_ID_QUERY, mapper, id);
             return user;
         } catch (EmptyResultDataAccessException ignored) {
-            return null;
+            throw new NotFoundException("Пользователь с id = " + id + " не найден.");
         }
     }
 
