@@ -31,7 +31,6 @@ import java.util.Set;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmControllerTest {
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
