@@ -32,7 +32,7 @@ public class FilmDbStorage implements FilmStorage {
     private static final String ADD_LIKE_QUERY = "MERGE INTO film_like (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_BY_ID_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ?";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
-    private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, ARRAY(SELECT g.genre_id FROM film AS ff INNER JOIN film_genre AS g ON ff.film_id = g.film_id WHERE ff.film_id = f.film_id ORDER BY g.genre_id) AS genres, l.likes FROM film AS f INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id GROUP BY f.film_id ORDER BY likes DESC LIMIT ?";
+    private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, l.likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
 
     @Override
     public Film create(Film film) {

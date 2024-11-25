@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @lombok.Data
@@ -21,7 +22,7 @@ public class Film {
 
     private Mpa mpa;
 
-    private Set<Genre> genres;
+    private Set<Genre> genres = new LinkedHashSet<>();
 
     private String description;
 
@@ -33,4 +34,8 @@ public class Film {
 
     @JsonIgnore
     private Set<Long> likedUsers = new HashSet<>();
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
 }

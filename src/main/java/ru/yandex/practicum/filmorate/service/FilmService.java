@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,11 +30,15 @@ public class FilmService {
     }
 
     public Collection<Film> findAll() {
-        return filmStorage.findAll();
+        Collection<Film> films = filmStorage.findAll();
+        genreService.loadGenres(films);
+        return films;
     }
 
     public Film findById(Long filmId) {
-        return filmStorage.findById(filmId);
+        Film film = filmStorage.findById(filmId);
+        genreService.loadGenres(Collections.singletonList(film));
+        return film;
     }
 
     public Film create(Film film) {
@@ -53,7 +58,8 @@ public class FilmService {
                 }
             }
         }
-        return filmStorage.create(film);
+        filmStorage.create(film);
+        return findById(film.getId());
     }
 
     public Film update(Film film) {
@@ -73,7 +79,8 @@ public class FilmService {
                 }
             }
         }
-        return filmStorage.update(film);
+        filmStorage.update(film);
+        return findById(film.getId());
     }
 
     public Film likeFilm(Long filmId, Long userId) {
@@ -106,6 +113,8 @@ public class FilmService {
         if (count == null) {
             count = TOP_LIMIT_N;
         }
-        return filmStorage.getTopFilmsByLike(count);
+        List<Film> films = filmStorage.getTopFilmsByLike(count);
+        genreService.loadGenres(films);
+        return films;
     }
 }
