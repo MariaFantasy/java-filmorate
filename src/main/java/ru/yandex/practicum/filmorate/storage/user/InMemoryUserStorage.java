@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users = new HashMap<>();
     private long userCounter = 0;
@@ -36,6 +37,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User findById(Long id) {
+        User user = users.get(id);
+        if (user == null)  {
+            throw new NotFoundException("Пользователь с id = " + id + " не найден.");
+        }
         return users.get(id);
     }
 

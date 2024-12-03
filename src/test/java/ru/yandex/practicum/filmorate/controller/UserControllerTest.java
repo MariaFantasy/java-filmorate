@@ -8,7 +8,10 @@ import ru.yandex.practicum.filmorate.model.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import ru.yandex.practicum.filmorate.service.FriendshipService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
+import ru.yandex.practicum.filmorate.storage.friendship.InMemoryFriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -19,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
     public static UserStorage userStorage = new InMemoryUserStorage();
-    public static UserService userService = new UserService(userStorage);
+    public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
+    public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
+    public static UserService userService = new UserService(userStorage, friendshipService);
     public static UserController userController = new UserController(userService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -104,8 +109,8 @@ public class UserControllerTest {
         User createdUser = userController.create(user);
         User createdFriend = userController.create(friend);
         userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
-        assertTrue(createdUser.getFriends().contains(createdFriend.getId()));
-        assertTrue(createdFriend.getFriends().contains(createdUser.getId()));
+        assertTrue(createdUser.getAcceptedFriends().contains(createdFriend.getId()));
+        assertTrue(createdFriend.getAcceptedFriends().contains(createdUser.getId()));
     }
 
     @Test
@@ -132,8 +137,8 @@ public class UserControllerTest {
         User createdFriend = userController.create(friend);
         userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
         userController.deleteFriendInUser(createdUser.getId(), createdFriend.getId());
-        assertFalse(createdUser.getFriends().contains(createdFriend.getId()));
-        assertFalse(createdFriend.getFriends().contains(createdUser.getId()));
+        assertFalse(createdUser.getAcceptedFriends().contains(createdFriend.getId()));
+        assertFalse(createdFriend.getAcceptedFriends().contains(createdUser.getId()));
     }
 
     @Test
@@ -160,7 +165,7 @@ public class UserControllerTest {
         User createdFriend = userController.create(friend);
         userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
         userController.deleteFriendInUser(createdUser.getId(), createdFriend.getId());
-        assertEquals(0, createdUser.getFriends().size());
+        assertEquals(0, createdUser.getAcceptedFriends().size());
     }
 
     @Test
@@ -170,8 +175,8 @@ public class UserControllerTest {
         User createdUser = userController.create(user);
         User createdFriend = userController.create(friend);
         userController.addFriendToUser(createdUser.getId(), createdFriend.getId());
-        assertEquals(1, createdUser.getFriends().size());
-        assertTrue(createdUser.getFriends().contains(createdFriend.getId()));
+        assertEquals(1, createdUser.getAcceptedFriends().size());
+        assertTrue(createdUser.getAcceptedFriends().contains(createdFriend.getId()));
     }
 
     @Test

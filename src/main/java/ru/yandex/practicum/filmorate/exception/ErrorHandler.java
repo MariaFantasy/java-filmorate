@@ -21,6 +21,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleDatabaseError(final DatabaseException e) {
+        return new ErrorResponse(
+                "Ошибка с данными.",
+                e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationError(final MethodArgumentNotValidException e) {
         return new ErrorResponse(
                 "Объект не прошел валидацию.",

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @lombok.Data
@@ -19,6 +20,10 @@ public class Film {
     @NotBlank(message = "Название фильма не может быть пустым")
     private String name;
 
+    private Mpa mpa;
+
+    private Set<Genre> genres = new LinkedHashSet<>();
+
     private String description;
 
     @NotNull(message = "Дата релиза фильма не может быть пустой")
@@ -28,5 +33,9 @@ public class Film {
     private int duration;
 
     @JsonIgnore
-    private final Set<Long> likedUsers = new HashSet<>();
+    private Set<Long> likedUsers = new HashSet<>();
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
 }

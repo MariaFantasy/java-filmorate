@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
     private long filmCounter = 0;
@@ -36,12 +37,34 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film findById(Long id) {
-        return films.get(id);
+        Film film = films.get(id);
+        if (film == null) {
+            throw new NotFoundException("Фильм с id = " + id + " не найден.");
+        }
+        return film;
     }
 
     @Override
     public Collection<Film> findAll() {
         return films.values();
+    }
+
+    @Override
+    public void addLike(Film film, User user) {
+        film.getLikedUsers().add(user.getId());
+    }
+
+    @Override
+    public void deleteLike(Film film, User user) {
+        film.getLikedUsers().remove(user.getId());
+    }
+
+    @Override
+    public List<Film> getTopFilmsByLike(Long count) {
+        return findAll().stream()
+                .sorted(Comparator.comparingLong(film -> -film.getLikedUsers().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     private long getNextId() {

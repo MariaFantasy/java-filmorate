@@ -1,39 +1,86 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class FilmService {
     private static final long TOP_LIMIT_N = 10;
 
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final GenreService genreService;
+    private final MpaService mpaService;
+
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService, GenreService genreService, MpaService mpaService) {
+        this.filmStorage = filmStorage;
+        this.userService = userService;
+        this.genreService = genreService;
+        this.mpaService = mpaService;
+    }
 
     public Collection<Film> findAll() {
-        return filmStorage.findAll();
+        Collection<Film> films = filmStorage.findAll();
+        genreService.loadGenres(films);
+        return films;
     }
 
     public Film findById(Long filmId) {
-        return filmStorage.findById(filmId);
+        Film film = filmStorage.findById(filmId);
+        genreService.loadGenres(Collections.singletonList(film));
+        return film;
     }
 
-    public void create(Film film) {
+    public Film create(Film film) {
+        if (film.getMpa() != null) {
+            try {
+                mpaService.findById(film.getMpa().getId());
+            } catch (NotFoundException e) {
+                throw new DatabaseException(e.getMessage());
+            }
+        }
+        if (film.getGenres() != null) {
+            for (Genre genre : film.getGenres()) {
+                try {
+                    genreService.findById(genre.getId());
+                } catch (NotFoundException e) {
+                    throw new DatabaseException(e.getMessage());
+                }
+            }
+        }
         filmStorage.create(film);
+        return findById(film.getId());
     }
 
-    public void update(Film film) {
+    public Film update(Film film) {
+        if (film.getMpa() != null) {
+            try {
+                mpaService.findById(film.getMpa().getId());
+            } catch (NotFoundException e) {
+                throw new DatabaseException(e.getMessage());
+            }
+        }
+        if (film.getGenres() != null) {
+            for (Genre genre : film.getGenres()) {
+                try {
+                    genreService.findById(genre.getId());
+                } catch (NotFoundException e) {
+                    throw new DatabaseException(e.getMessage());
+                }
+            }
+        }
         filmStorage.update(film);
+        return findById(film.getId());
     }
 
     public Film likeFilm(Long filmId, Long userId) {
@@ -45,7 +92,7 @@ public class FilmService {
         if (user == null) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        film.getLikedUsers().add(user.getId());
+        filmStorage.addLike(film, user);
         return film;
     }
 
@@ -58,7 +105,7 @@ public class FilmService {
         if (user == null) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        film.getLikedUsers().remove(user.getId());
+        filmStorage.deleteLike(film, user);
         return film;
     }
 
@@ -66,9 +113,8 @@ public class FilmService {
         if (count == null) {
             count = TOP_LIMIT_N;
         }
-        return filmStorage.findAll().stream()
-                .sorted(Comparator.comparingLong(film -> -film.getLikedUsers().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        List<Film> films = filmStorage.getTopFilmsByLike(count);
+        genreService.loadGenres(films);
+        return films;
     }
 }
