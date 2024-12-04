@@ -25,7 +25,7 @@ public class UserControllerTest {
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
     public static UserService userService = new UserService(userStorage, friendshipService);
-    public static UserController userController = new UserController(userService);
+    public static UserController userController = new UserController(userService, friendshipService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
