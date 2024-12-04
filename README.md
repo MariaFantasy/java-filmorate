@@ -56,6 +56,16 @@ erDiagram
         integer friendship_status_id PK
         varchar name UK
     }
+    
+    director {
+        bigint director_id PK
+        varchar name UK
+    }
+    
+    film_director {
+        bigint film_id FK
+        bigint director_id FK
+    }
 
 
     genre ||--o{ film_genre : genre_id
@@ -66,6 +76,8 @@ erDiagram
     user ||--o{ user_friend : user_id
     user ||--o{ user_friend : friend_id
     friendship_status ||--o{ user_friend : friendship_status_id
+    director ||--o{ film_director : director_id
+    film ||--o{ film_director : film_id
 
 ```
 
