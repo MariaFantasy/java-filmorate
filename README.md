@@ -57,21 +57,6 @@ erDiagram
         varchar name UK
     }
 
-    film_review {
-        integer review_id PK
-        bigint film_id FK
-        bigint user_id FK
-        varchar(200) content
-        boolean is_positive
-        integer useful
-    }
-
-    film_review_like {
-        bigint review_id FK
-        bigint user_id FK
-        integer like_value
-    }
-
 
     genre ||--o{ film_genre : genre_id
     film ||--o{ film_genre : film_id
@@ -81,10 +66,6 @@ erDiagram
     user ||--o{ user_friend : user_id
     user ||--o{ user_friend : friend_id
     friendship_status ||--o{ user_friend : friendship_status_id
-    film ||--o{ film_review : film_id
-    user ||--o{ film_review : user_id
-    film_review ||--o{ film_review_like : review_id
-    user ||--o{ film_review_like : user_id
 
 ```
 
