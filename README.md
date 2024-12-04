@@ -7,6 +7,8 @@ Template repository for Filmorate project.
 
 ![DataBase Diagram](dataBaseDiagram.svg)
 
+https://app.quickdatabasediagrams.com/#/d/8RkOeC
+
 #### Database Main Queries
 
 1. Get popular films
