@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,23 +22,27 @@ public class FilmService {
     private final UserService userService;
     private final GenreService genreService;
     private final MpaService mpaService;
+    private final DirectorService directorService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService, GenreService genreService, MpaService mpaService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService, GenreService genreService, MpaService mpaService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.genreService = genreService;
         this.mpaService = mpaService;
+        this.directorService = directorService;
     }
 
     public Collection<Film> findAll() {
         Collection<Film> films = filmStorage.findAll();
         genreService.loadGenres(films);
+        directorService.loadDirectors(films);
         return films;
     }
 
     public Film findById(Long filmId) {
         Film film = filmStorage.findById(filmId);
         genreService.loadGenres(Collections.singletonList(film));
+        directorService.loadDirectors(Collections.singletonList(film));
         return film;
     }
 
@@ -47,6 +52,15 @@ public class FilmService {
                 mpaService.findById(film.getMpa().getId());
             } catch (NotFoundException e) {
                 throw new DatabaseException(e.getMessage());
+            }
+        }
+        if (film.getDirectors() != null) {
+            for (Director director : film.getDirectors()) {
+                try {
+                    directorService.findById(director.getId());
+                } catch (NotFoundException e) {
+                    throw new DatabaseException(e.getMessage());
+                }
             }
         }
         if (film.getGenres() != null) {
@@ -68,6 +82,15 @@ public class FilmService {
                 mpaService.findById(film.getMpa().getId());
             } catch (NotFoundException e) {
                 throw new DatabaseException(e.getMessage());
+            }
+        }
+        if (film.getDirectors() != null) {
+            for (Director director : film.getDirectors()) {
+                try {
+                    directorService.findById(director.getId());
+                } catch (NotFoundException e) {
+                    throw new DatabaseException(e.getMessage());
+                }
             }
         }
         if (film.getGenres() != null) {
@@ -115,6 +138,7 @@ public class FilmService {
         }
         List<Film> films = filmStorage.getTopFilmsByLike(count);
         genreService.loadGenres(films);
+        directorService.loadDirectors(films);
         return films;
     }
 }
