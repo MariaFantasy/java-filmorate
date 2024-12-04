@@ -24,7 +24,6 @@ public class UserDbStorage implements UserStorage {
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM users WHERE user_id = ?";
     private static final String UPDATE_BY_ID_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
     private static final String INSERT_QUERY = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
-    private static final String COUNT_FILM_LIKES_QUERY = "SELECT COUNT(*) FROM film_like WHERE user_id = ?";
 
     @Override
     public User create(User user) {
@@ -75,11 +74,5 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Collection<User> findAll() {
         return jdbc.query(FIND_ALL_QUERY, mapper);
-    }
-
-    @Override
-    public boolean isFilmLikeExists(Long id) {
-        Integer likesCount = jdbc.queryForObject(COUNT_FILM_LIKES_QUERY, Integer.class, id);
-        return likesCount != null && likesCount > 0;
     }
 }

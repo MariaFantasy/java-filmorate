@@ -100,16 +100,6 @@ public class FilmController {
             log.info("Запрос DELETE /films/{} обработан не был по причине: Фильм с id = {} не найден", filmId, filmId);
             throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
         }
-        if (filmService.isLikeExists(filmId)) {
-            log.info("Запрос DELETE /films/{} обработан не был по причине: У фильма с id = {} есть поклонники", filmId, filmId);
-            throw new ConditionsNotMetException("Фильм с id = " + filmId + " имеет поклонников и не может быть удален.");
-        }
-/*
-        if (filmService.isReviewExists(filmId)) {
-            log.info("Запрос DELETE /films/{} обработан не был по причине: У фильма с id = {} есть обзоры", filmId, filmId);
-            throw new ConditionsNotMetException("Фильм с id = " + filmId + " имеет обзоры и не может быть удален.");
-        }
-*/
         filmService.delete(film);
         log.info("Отправлен ответ DELETE /films/{} с телом: {}", filmId, film);
         return film;

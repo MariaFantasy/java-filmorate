@@ -61,10 +61,6 @@ public class UserService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public boolean isFilmLikeExists(Long userId) {
-        return userStorage.isFilmLikeExists(userId);
-    }
-
     public void delete(User user) {
         userStorage.delete(user);
     }

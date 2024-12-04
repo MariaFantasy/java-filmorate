@@ -32,8 +32,6 @@ public class FilmDbStorage implements FilmStorage {
     private static final String ADD_LIKE_QUERY = "MERGE INTO film_like (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
     private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, l.likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
-    private static final String COUNT_FILM_LIKES_QUERY = "SELECT COUNT(*) FROM film_like WHERE film_id = ?";
-    private static final String COUNT_FILM_REVIEWS_QUERY = "SELECT COUNT(*) FROM film_review WHERE film_id = ?";
 
     @Override
     public Film create(Film film) {
@@ -120,17 +118,5 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopFilmsByLike(Long count) {
         return jdbc.query(TOP_LIST_QUERY, mapper, count);
-    }
-
-    @Override
-    public boolean isLikeExists(Long id) {
-        Integer likesCount = jdbc.queryForObject(COUNT_FILM_LIKES_QUERY, Integer.class, id);
-        return likesCount != null && likesCount > 0;
-    }
-
-    @Override
-    public boolean isReviewExists(Long id) {
-        Integer reviewsCount = jdbc.queryForObject(COUNT_FILM_REVIEWS_QUERY, Integer.class, id);
-        return reviewsCount != null && reviewsCount > 0;
     }
 }

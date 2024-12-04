@@ -21,7 +21,6 @@ import java.util.Collection;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final FriendshipService friendshipService;
 
     @GetMapping
     public Collection<User> findAll() {
@@ -152,14 +151,6 @@ public class UserController {
         if (user == null) {
             log.info("Запрос DELETE /users/{} обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
-        }
-        if (userService.isFilmLikeExists(userId)) {
-            log.info("Запрос DELETE /users/{} обработан не был по причине: У пользователя с id = {} есть любимые фильмы", userId, userId);
-            throw new ConditionsNotMetException("Пользователь с id = " + userId + " имеет любимые фильмы и не может быть удален.");
-        }
-        if (friendshipService.isUserFriendExists(userId)) {
-            log.info("Запрос DELETE /users/{} обработан не был по причине: У пользователя с id = {} есть друзья", userId, userId);
-            throw new ConditionsNotMetException("Пользователь с id = " + userId + " имеет друзей и не может быть удален.");
         }
         userService.delete(user);
         log.info("Отправлен ответ DELETE /users/{} с телом: {}", userId, user);
