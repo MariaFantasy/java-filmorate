@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FriendshipService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.Collection;
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final FriendshipService friendshipService;
 
     @GetMapping
     public Collection<User> findAll() {
@@ -141,6 +143,27 @@ public class UserController {
         Collection<User> intersectionOfFriends = userService.getIntersectionOfFriends(user, otherUser);
         log.info("Отправлен ответ GET /users/{}/friends/common/{} с телом: {}", userId, otherId, intersectionOfFriends);
         return intersectionOfFriends;
+    }
+
+    @DeleteMapping("/{userId}")
+    public User delete(@PathVariable Long userId) {
+        log.info("Пришел DELETE запрос /users/{}", userId);
+        final User user = userService.findById(userId);
+        if (user == null) {
+            log.info("Запрос DELETE /users/{} обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        if (userService.isFilmLikeExists(userId)) {
+            log.info("Запрос DELETE /users/{} обработан не был по причине: У пользователя с id = {} есть любимые фильмы", userId, userId);
+            throw new ConditionsNotMetException("Пользователь с id = " + userId + " имеет любимые фильмы и не может быть удален.");
+        }
+        if (friendshipService.isUserFriendExists(userId)) {
+            log.info("Запрос DELETE /users/{} обработан не был по причине: У пользователя с id = {} есть друзья", userId, userId);
+            throw new ConditionsNotMetException("Пользователь с id = " + userId + " имеет друзей и не может быть удален.");
+        }
+        userService.delete(user);
+        log.info("Отправлен ответ DELETE /users/{} с телом: {}", userId, user);
+        return user;
     }
 
     private void validate(final User user) {

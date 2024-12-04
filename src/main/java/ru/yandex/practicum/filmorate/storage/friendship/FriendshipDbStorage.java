@@ -19,6 +19,7 @@ public class FriendshipDbStorage implements FriendshipStorage {
     private static final String CONFIRM_FRIEND_QUERY = "UPDATE user_friend SET friendship_status_id = 1 WHERE user_id = ? AND friend_id = ?";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM user_friend WHERE user_id = ? AND friend_id = ?";
     private static final String GET_FRIENDS_QUERY = "SELECT friend_id FROM user_friend WHERE user_id = ? AND friendship_status_id = 1";
+    private static final String COUNT_FRIENDS_QUERY = "SELECT COUNT(*) FROM user_friend WHERE user_id = ?";
 
     @Override
     public Collection<Long> getFriends(User user) {
@@ -48,5 +49,11 @@ public class FriendshipDbStorage implements FriendshipStorage {
     @Override
     public void deleteFriend(User user, User oldFriend) {
         jdbc.update(DELETE_FRIEND_QUERY, user.getId(), oldFriend.getId());
+    }
+
+    @Override
+    public boolean isUserFriendExists(Long id) {
+        Integer friendCount = jdbc.queryForObject(COUNT_FRIENDS_QUERY, Integer.class, id);
+        return friendCount != null && friendCount > 0;
     }
 }

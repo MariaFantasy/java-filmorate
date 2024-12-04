@@ -92,6 +92,29 @@ public class FilmController {
         return topFilms;
     }
 
+    @DeleteMapping("/{filmId}")
+    public Film delete(@PathVariable Long filmId) {
+        log.info("Пришел DELETE запрос /films/{}", filmId);
+        final Film film = filmService.findById(filmId);
+        if (film == null) {
+            log.info("Запрос DELETE /films/{} обработан не был по причине: Фильм с id = {} не найден", filmId, filmId);
+            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
+        }
+        if (filmService.isLikeExists(filmId)) {
+            log.info("Запрос DELETE /films/{} обработан не был по причине: У фильма с id = {} есть поклонники", filmId, filmId);
+            throw new ConditionsNotMetException("Фильм с id = " + filmId + " имеет поклонников и не может быть удален.");
+        }
+/*
+        if (filmService.isReviewExists(filmId)) {
+            log.info("Запрос DELETE /films/{} обработан не был по причине: У фильма с id = {} есть обзоры", filmId, filmId);
+            throw new ConditionsNotMetException("Фильм с id = " + filmId + " имеет обзоры и не может быть удален.");
+        }
+*/
+        filmService.delete(film);
+        log.info("Отправлен ответ DELETE /films/{} с телом: {}", filmId, film);
+        return film;
+    }
+
     private void validate(final Film film) {
         if (film.getDescription().length() > 200) {
             log.debug("Фильм не прошел валидацию по причине: Максимальная длина описания — 200 символов");

@@ -14,4 +14,8 @@ public interface UserStorage {
     public User findById(Long id);
 
     public Collection<User> findAll();
+
+    default boolean isFilmLikeExists(Long id) {
+        return false;
+    }
 }

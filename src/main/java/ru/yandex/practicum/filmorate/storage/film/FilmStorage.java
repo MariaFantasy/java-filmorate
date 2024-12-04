@@ -23,4 +23,12 @@ public interface FilmStorage {
     public void deleteLike(Film film, User user);
 
     public List<Film> getTopFilmsByLike(Long count);
+
+    default boolean isLikeExists(Long id) {
+        return false;
+    }
+
+    default boolean isReviewExists(Long id) {
+        return false;
+    }
 }

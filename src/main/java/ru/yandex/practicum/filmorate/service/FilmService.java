@@ -117,4 +117,16 @@ public class FilmService {
         genreService.loadGenres(films);
         return films;
     }
+
+    public boolean isLikeExists(Long filmId) {
+        return filmStorage.isLikeExists(filmId);
+    }
+
+    public boolean isReviewExists(Long filmId) {
+        return filmStorage.isReviewExists(filmId);
+    }
+
+    public void delete(Film film) {
+        filmStorage.delete(film);
+    }
 }
