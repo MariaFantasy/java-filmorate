@@ -36,6 +36,7 @@ public class DirectorDbStorage implements DirectorStorage {
         }, keyHolder);
 
         Long id = keyHolder.getKeyAs(Long.class);
+        director.setId(id);
 
         return findById(id);
     }
