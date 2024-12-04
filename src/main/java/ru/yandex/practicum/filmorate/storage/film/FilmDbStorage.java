@@ -158,8 +158,8 @@ public class FilmDbStorage implements FilmStorage {
 
         jdbc.query(loadLikedUsers, (rs) -> {
             final Film film = filmById.get(rs.getLong("film_id"));
-            Long user_id = rs.getLong("user_id");
-            film.addLike(user_id);
+            Long userId = rs.getLong("user_id");
+            film.addLike(userId);
         });
     }
 }
