@@ -44,4 +44,8 @@ public class Film {
     public void addDirector(Director director) {
         directors.add(director);
     }
+
+    public void addLike(Long user_id) {
+        likedUsers.add(user_id);
+    }
 }

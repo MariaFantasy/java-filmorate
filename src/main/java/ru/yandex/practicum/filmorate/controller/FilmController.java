@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
@@ -90,6 +91,17 @@ public class FilmController {
         Collection<Film> topFilms = filmService.getTopFilmsByLike(count);
         log.info("Отправлен ответ GET /popular/count={} с телом: {}", count, topFilms);
         return topFilms;
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
+        log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
+        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
+            throw new ConditionsNotMetException("Сортировки " + sortBy + " пока не существует.");
+        }
+        Collection<Film> films = filmService.getByDirector(directorId, sortBy);
+        log.info("Отправлен ответ GET /films/director/{}?sortBy={} с телом: {}", directorId, sortBy, films);
+        return films;
     }
 
     private void validate(final Film film) {

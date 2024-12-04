@@ -16,6 +16,11 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static java.util.function.UnaryOperator.identity;
 
 @Repository("filmDbStorage")
 @RequiredArgsConstructor
@@ -36,6 +41,7 @@ public class FilmDbStorage implements FilmStorage {
     private static final String DELETE_BY_ID_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ?";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
     private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, l.likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
+    private static final String FIND_ALL_BY_DIRECTOR_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN film_director AS fd ON f.film_id = fd.film_id WHERE fd.director_id = ?";
 
     @Override
     public Film create(Film film) {
@@ -132,5 +138,28 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopFilmsByLike(Long count) {
         return jdbc.query(TOP_LIST_QUERY, mapper, count);
+    }
+
+    @Override
+    public List<Film> getByDirector(Long directorId) {
+        return jdbc.query(FIND_ALL_BY_DIRECTOR_QUERY, mapper, directorId);
+    }
+
+    @Override
+    public void loadLikes(Collection<Film> films) {
+        final Map<Long, Film> filmById = films.stream().collect(Collectors.toMap(Film::getId, identity()));
+
+        String filmsIds = films.stream()
+                .map(Film::getId)
+                .map(Objects::toString)
+                .collect(Collectors.joining(","));
+        final String loadLikedUsers = "SELECT film_id, user_id FROM film_like WHERE film_id IN ("
+                + filmsIds + ")";
+
+        jdbc.query(loadLikedUsers, (rs) -> {
+            final Film film = filmById.get(rs.getLong("film_id"));
+            Long user_id = rs.getLong("user_id");
+            film.addLike(user_id);
+        });
     }
 }

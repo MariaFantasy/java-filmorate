@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -65,6 +66,18 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted(Comparator.comparingLong(film -> -film.getLikedUsers().size()))
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getByDirector(Long directorId) {
+        return findAll().stream()
+                .filter(film -> film.getDirectors().contains(new Director(directorId, "")))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void loadLikes(Collection<Film> films) {
+        return;
     }
 
     private long getNextId() {

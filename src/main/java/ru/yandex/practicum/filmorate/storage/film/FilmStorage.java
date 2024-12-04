@@ -23,4 +23,8 @@ public interface FilmStorage {
     public void deleteLike(Film film, User user);
 
     public List<Film> getTopFilmsByLike(Long count);
+
+    public List<Film> getByDirector(Long directorId);
+
+    public void loadLikes(Collection<Film> films);
 }

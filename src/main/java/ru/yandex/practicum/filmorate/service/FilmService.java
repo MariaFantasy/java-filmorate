@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -139,6 +140,26 @@ public class FilmService {
         List<Film> films = filmStorage.getTopFilmsByLike(count);
         genreService.loadGenres(films);
         directorService.loadDirectors(films);
+        return films;
+    }
+
+    public List<Film> getByDirector(Long directorId, String sortType) {
+        List<Film> films = filmStorage.getByDirector(directorId);
+        genreService.loadGenres(films);
+        directorService.loadDirectors(films);
+        filmStorage.loadLikes(films);
+        films.sort(new Comparator<Film>() {
+            @Override
+            public int compare(Film film, Film otherFilm) {
+                if (sortType.equals("year")) {
+                    return Integer.compare(film.getReleaseDate().getYear(), otherFilm.getReleaseDate().getYear());
+                }
+                if (sortType.equals("likes")) {
+                    return -Long.compare(film.getLikedUsers().size(), otherFilm.getLikedUsers().size());
+                }
+                return 0;
+            }
+        });
         return films;
     }
 }
