@@ -69,15 +69,15 @@ CREATE TABLE IF NOT EXISTS film_review (
     content VARCHAR(200),
     is_positive BOOLEAN NOT NULL,
     useful INTEGER default 0,
-    FOREIGN KEY (film_id) REFERENCES film(film_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (film_id) REFERENCES film(film_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS film_review_like (
     review_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     like_value INTEGER,
-    FOREIGN KEY (review_id) REFERENCES film_review(review_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (review_id) REFERENCES film_review(review_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT review_like_PK PRIMARY KEY (review_id, user_id)
 );
