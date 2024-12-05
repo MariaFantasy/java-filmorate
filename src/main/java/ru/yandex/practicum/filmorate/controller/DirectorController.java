@@ -41,7 +41,7 @@ public class DirectorController {
     }
 
     @PostMapping
-    public Director crate(@Valid @RequestBody Director director) {
+    public Director create(@Valid @RequestBody Director director) {
         log.info("Пришел POST запрос /directors с телом: {}", director);
         Director createdDirector = directorService.create(director);
         log.info("Отправлен ответ POST /directors с телом: {}", createdDirector);
