@@ -184,7 +184,7 @@ public class FilmDbStorage implements FilmStorage {
             film.addLike(userId);
         });
     }
-    
+
     @Override
     public List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
         return jdbc.query(FIND_POPULAR_QUERY, mapper, year, year, genreId, genreId, count);
