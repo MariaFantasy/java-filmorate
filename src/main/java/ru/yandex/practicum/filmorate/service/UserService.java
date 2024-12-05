@@ -2,23 +2,26 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserStorage userStorage;
     private final FriendshipService friendshipService;
+    private final FilmStorage filmStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipService friendshipService) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FriendshipService friendshipService,
+                       @Qualifier("filmDbStorage") FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
+        this.filmStorage = filmStorage;
     }
 
     public Collection<User> findAll() {
@@ -59,5 +62,12 @@ public class UserService {
         return friendshipService.getIntersectionOfFriends(user1, user2).stream()
                 .map(this::findById)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+
+    public List<Film> getRecommendationsByUserId(Long id) {
+        userStorage.findById(id);
+
+        return filmStorage.getRecommendationByUserId(id);
     }
 }

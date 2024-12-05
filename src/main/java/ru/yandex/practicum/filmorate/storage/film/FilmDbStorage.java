@@ -33,6 +33,31 @@ public class FilmDbStorage implements FilmStorage {
     private static final String DELETE_BY_ID_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ?";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
     private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, l.likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
+    private static final String RECOMMENDATION_LIST_QUERY = """
+            SELECT *
+            FROM film
+            WHERE film_id IN (
+                SELECT fl.film_id
+                FROM film_like AS fl
+                LEFT JOIN (
+                    SELECT user_list.user_id, COUNT(user_list.film_id) AS balls
+                    FROM film_like AS user_list
+                    LEFT JOIN (
+                        SELECT film_id
+                        FROM film_like
+                        WHERE user_id = ?
+                    ) AS selected_films ON user_list.film_id = selected_films.film_id
+                    WHERE selected_films.film_id IS NOT NULL
+                    GROUP BY user_list.user_id
+                ) AS film_ball ON fl.user_id = film_ball.user_id
+                WHERE fl.film_id NOT IN (
+                    SELECT film_id
+                    FROM film_like
+                    WHERE user_id = ?
+                )
+                GROUP BY fl.film_id
+                ORDER BY SUM(film_ball.balls) DESC
+            );""";
 
     @Override
     public Film create(Film film) {
@@ -117,5 +142,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopFilmsByLike(Long count) {
         return jdbc.query(TOP_LIST_QUERY, mapper, count);
+    }
+
+    @Override
+    public List<Film> getRecommendationByUserId(Long userID) {
+        return jdbc.query(RECOMMENDATION_LIST_QUERY, mapper, userID, userID);
     }
 }

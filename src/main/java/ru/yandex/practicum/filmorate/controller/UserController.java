@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -112,17 +113,12 @@ public class UserController {
         return user;
     }
 
-    @GetMapping("/{userId}/friends")
-    public Collection<User> getUserFriends(@PathVariable Long userId) {
-        log.info("Пришел GET запрос /users/{}/friends", userId);
-        final User user = userService.findById(userId);
-        if (user == null) {
-            log.info("Запрос GET /users/{}/friends обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
-            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
-        }
-        Collection<User> friends = userService.getFriends(user);
-        log.info("Отправлен ответ GET /users/{}/friends с телом: {}", userId, friends);
-        return friends;
+    @GetMapping("/{userId}/recommendations")
+    public Collection<Film> getRecommendations(@PathVariable Long userId) {
+        log.info("Пришел GET запрос /users/{}/recommendations", userId);
+        Collection<Film> recommendations = userService.getRecommendationsByUserId(userId);
+        log.info("Отправлен ответ GET /users/{}/friends с телом: {}", userId, recommendations);
+        return recommendations;
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
@@ -141,6 +137,19 @@ public class UserController {
         Collection<User> intersectionOfFriends = userService.getIntersectionOfFriends(user, otherUser);
         log.info("Отправлен ответ GET /users/{}/friends/common/{} с телом: {}", userId, otherId, intersectionOfFriends);
         return intersectionOfFriends;
+    }
+
+    @GetMapping("/{userId}/friends")
+    public Collection<User> getUserFriends(@PathVariable Long userId) {
+        log.info("Пришел GET запрос /users/{}/friends", userId);
+        final User user = userService.findById(userId);
+        if (user == null) {
+            log.info("Запрос GET /users/{}/friends обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        Collection<User> friends = userService.getFriends(user);
+        log.info("Отправлен ответ GET /users/{}/friends с телом: {}", userId, friends);
+        return friends;
     }
 
     private void validate(final User user) {
