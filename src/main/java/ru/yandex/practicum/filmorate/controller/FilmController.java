@@ -94,6 +94,17 @@ public class FilmController {
         return topFilms;
     }
 
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
+        log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
+        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes")) {
+            throw new ConditionsNotMetException("Сортировки " + sortBy + " пока не существует.");
+        }
+        Collection<Film> films = filmService.getByDirector(directorId, sortBy);
+        log.info("Отправлен ответ GET /films/director/{}?sortBy={} с телом: {}", directorId, sortBy, films);
+        return films;
+    }
+
     @DeleteMapping("/{filmId}")
     public Film delete(@PathVariable Long filmId) {
         log.info("Пришел DELETE запрос /films/{}", filmId);
