@@ -27,4 +27,8 @@ public interface FilmStorage {
     default List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
         return getTopFilmsByLike(count);   // ignore genreId & year for in-memory storage
     }
+
+    public List<Film> getByDirector(Long directorId);
+
+    public void loadLikes(Collection<Film> films);
 }

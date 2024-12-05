@@ -5,6 +5,8 @@ Template repository for Filmorate project.
 
 ## DataBase
 
+
+
 ```mermaid
 erDiagram
     genre {
@@ -36,7 +38,7 @@ erDiagram
         bigint user_id FK
     }
 
-    user {
+    users {
         bigint user_id PK
         varchar email
         varchar login
@@ -53,6 +55,16 @@ erDiagram
     friendship_status {
         integer friendship_status_id PK
         varchar name UK
+    }
+    
+    director {
+        bigint director_id PK
+        varchar name UK
+    }
+    
+    film_director {
+        bigint film_id FK
+        bigint director_id FK
     }
 
     film_review {
@@ -78,6 +90,9 @@ erDiagram
     user ||--o{ user_friend : user_id
     user ||--o{ user_friend : friend_id
     friendship_status ||--o{ user_friend : friendship_status_id
+    director ||--o{ film_director : director_id
+    film ||--o{ film_director : film_id
+
     film ||--o{ film_review : film_id
     user ||--o{ film_review : user_id
     film_review ||--o{ film_review_like : review_id
