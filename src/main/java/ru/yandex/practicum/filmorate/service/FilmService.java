@@ -15,8 +15,6 @@ import java.util.List;
 
 @Service
 public class FilmService {
-    private static final long TOP_LIMIT_N = 10;
-
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final GenreService genreService;
