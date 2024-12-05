@@ -77,7 +77,16 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void loadLikes(Collection<Film> films) {
-        return;
+    }
+
+    @Override
+    public List<Film> searchFilmsByTitle(String query) {
+        return List.of();
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirector(String query) {
+        return List.of();
     }
 
     private long getNextId() {

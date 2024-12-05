@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -112,6 +111,14 @@ public class FilmController {
         filmService.delete(film);
         log.info("Отправлен ответ DELETE /films/{} с телом: {}", filmId, film);
         return film;
+    }
+
+    @GetMapping("/search")
+    public Collection<Film> search(@RequestParam String query, @RequestParam String by) {
+        log.info("Пришел GET запрос /films/search с query={} и by={}", query, by);
+        Collection<Film> filmsFound = filmService.search(query, by);
+        log.info("Отправлен ответ GET /films/search с телом: {}", filmsFound);
+        return filmsFound;
     }
 
     private void validate(final Film film) {
