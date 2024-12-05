@@ -97,7 +97,7 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
         log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
-        if (!sortBy.equals("year") && !sortBy.equals("likes")) {
+        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes")) {
             throw new ConditionsNotMetException("Сортировки " + sortBy + " пока не существует.");
         }
         Collection<Film> films = filmService.getByDirector(directorId, sortBy);
