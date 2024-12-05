@@ -41,8 +41,4 @@ public class FriendshipService {
                 .filter(user2Friends::contains)
                 .collect(Collectors.toSet());
     }
-
-    public boolean isUserFriendExists(Long userId) {
-        return friendshipStorage.isUserFriendExists(userId);
-    }
 }

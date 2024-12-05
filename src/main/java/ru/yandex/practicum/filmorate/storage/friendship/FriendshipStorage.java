@@ -13,8 +13,4 @@ public interface FriendshipStorage {
     public void confirmFriend(User user, User newFriend);
 
     public void deleteFriend(User user, User oldFriend);
-
-    default boolean isUserFriendExists(Long id) {
-        return false;
-    }
 }
