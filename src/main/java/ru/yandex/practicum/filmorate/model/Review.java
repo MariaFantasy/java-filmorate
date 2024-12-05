@@ -16,8 +16,10 @@ public class Review {
     @NotNull
     private Boolean isPositive;
 
+    @NotNull
     private Long filmId;
 
+    @NotNull
     private Long userId;
 
     private int useful = 0;

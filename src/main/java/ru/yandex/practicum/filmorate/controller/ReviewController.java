@@ -19,7 +19,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public Collection<Review> findByParameter(@RequestParam(defaultValue = "0") long filmId,
+    public Collection<Review> findByParameter(@RequestParam Long filmId,
                                               @RequestParam(defaultValue = "10") int count) {
         log.info("Пришел GET запрос /reviews");
         Collection<Review> allReviews = reviewService.findByParameter(filmId, count);

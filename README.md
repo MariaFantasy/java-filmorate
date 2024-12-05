@@ -56,7 +56,7 @@ erDiagram
     }
 
     film_review {
-        integer review_id PK
+        bigint review_id PK
         bigint film_id FK
         bigint user_id FK
         varchar(200) content

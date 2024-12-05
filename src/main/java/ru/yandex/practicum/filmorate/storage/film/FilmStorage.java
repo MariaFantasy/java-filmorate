@@ -8,19 +8,19 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    public Film create(Film film);
+    Film create(Film film);
 
-    public Film update(Film film);
+    Film update(Film film);
 
-    public Film delete(Film film);
+    Film delete(Film film);
 
-    public Film findById(Long id);
+    Film findById(Long id);
 
-    public Collection<Film> findAll();
+    Collection<Film> findAll();
 
-    public void addLike(Film film, User user);
+     void addLike(Film film, User user);
 
-    public void deleteLike(Film film, User user);
+    void deleteLike(Film film, User user);
 
-    public List<Film> getTopFilmsByLike(Long count);
+    List<Film> getTopFilmsByLike(Long count);
 }

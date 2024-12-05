@@ -20,7 +20,7 @@ public class ReviewDBStorage implements ReviewStorage {
     private final ReviewRowMapper mapper;
 
     private static final String FIND_LIMITED_QUERY = "SELECT * FROM film_review ORDER BY useful desc limit ?";
-    private static final String FIND_LIMITED_BY_FILM__QUERY = """
+    private static final String FIND_LIMITED_BY_FILM_QUERY = """
             SELECT * FROM film_review
             WHERE film_id = ?
             ORDER BY useful desc limit ?""";
@@ -55,7 +55,7 @@ public class ReviewDBStorage implements ReviewStorage {
 
     @Override
     public List<Review> findLimitedByFilm(long filmId, int count) {
-        return jdbc.query(FIND_LIMITED_BY_FILM__QUERY, mapper, filmId, count);
+        return jdbc.query(FIND_LIMITED_BY_FILM_QUERY, mapper, filmId, count);
     }
 
     @Override

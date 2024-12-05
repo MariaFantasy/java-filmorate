@@ -23,8 +23,8 @@ public class ReviewService {
         this.filmService = filmService;
     }
 
-    public List<Review> findByParameter(long filmId, int count) {
-        if (filmId == 0) {
+    public List<Review> findByParameter(Long filmId, int count) {
+        if (filmId == null) {
             return reviewStorage.findLimited(count);
         } else {
             return reviewStorage.findLimitedByFilm(filmId, count);
