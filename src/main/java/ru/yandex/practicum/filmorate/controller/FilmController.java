@@ -85,10 +85,12 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(required = false) Long count) {
-        log.info("Пришел GET запрос /popular/count={}", count);
-        Collection<Film> topFilms = filmService.getTopFilmsByLike(count);
-        log.info("Отправлен ответ GET /popular/count={} с телом: {}", count, topFilms);
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") Long count,
+                                       @RequestParam(required = false) Integer genreId,
+                                       @RequestParam(required = false) Integer year) {
+        log.info("Пришел GET запрос /popular?count={}&genreId={}&year={}", count, genreId, year);
+        Collection<Film> topFilms = filmService.getTopFilmsByLike(count, genreId, year);
+        log.info("Отправлен ответ GET /popular?count={}&genreId={}&year={} с телом: {}", count, genreId, year, topFilms);
         return topFilms;
     }
 
