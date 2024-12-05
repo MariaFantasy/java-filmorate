@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS director (
 CREATE TABLE IF NOT EXISTS film_director (
     film_id BIGINT NOT NULL,
     director_id BIGINT NOT NULL,
-    FOREIGN KEY (film_id) REFERENCES film(film_id),
-    FOREIGN KEY (director_id) REFERENCES director(director_id),
+    FOREIGN KEY (film_id) REFERENCES film(film_id) ON DELETE CASCADE,
+    FOREIGN KEY (director_id) REFERENCES director(director_id) ON DELETE CASCADE,
     CONSTRAINT film_director_PK PRIMARY KEY (film_id, director_id)
 );
