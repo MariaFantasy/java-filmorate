@@ -8,19 +8,23 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    Film create(Film film);
+    public Film create(Film film);
 
-    Film update(Film film);
+    public Film update(Film film);
 
-    Film delete(Film film);
+    public Film delete(Film film);
 
-    Film findById(Long id);
+    public Film findById(Long id);
 
-    Collection<Film> findAll();
+    public Collection<Film> findAll();
 
-     void addLike(Film film, User user);
+    public void addLike(Film film, User user);
 
-    void deleteLike(Film film, User user);
+    public void deleteLike(Film film, User user);
 
-    List<Film> getTopFilmsByLike(Long count);
+    public List<Film> getTopFilmsByLike(Long count);
+
+    default List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
+        return getTopFilmsByLike(count);   // ignore genreId & year for in-memory storage
+    }
 }
