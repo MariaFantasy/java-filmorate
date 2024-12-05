@@ -60,4 +60,8 @@ public class UserService {
                 .map(this::findById)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
+
+    public void delete(User user) {
+        userStorage.delete(user);
+    }
 }

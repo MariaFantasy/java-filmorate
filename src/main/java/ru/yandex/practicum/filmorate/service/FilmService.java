@@ -17,8 +17,6 @@ import java.util.List;
 
 @Service
 public class FilmService {
-    private static final long TOP_LIMIT_N = 10;
-
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final GenreService genreService;
@@ -133,11 +131,8 @@ public class FilmService {
         return film;
     }
 
-    public List<Film> getTopFilmsByLike(Long count) {
-        if (count == null) {
-            count = TOP_LIMIT_N;
-        }
-        List<Film> films = filmStorage.getTopFilmsByLike(count);
+    public List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
+        List<Film> films = filmStorage.getTopFilmsByLike(count, genreId, year);
         genreService.loadGenres(films);
         directorService.loadDirectors(films);
         return films;
@@ -161,5 +156,9 @@ public class FilmService {
             }
         });
         return films;
+    }
+
+    public void delete(Film film) {
+        filmStorage.delete(film);
     }
 }
