@@ -143,6 +143,15 @@ public class UserController {
         return intersectionOfFriends;
     }
 
+    @DeleteMapping("/{userId}")
+    public User delete(@PathVariable Long userId) {
+        log.info("Пришел DELETE запрос /users/{}", userId);
+        final User user = userService.findById(userId);
+        userService.delete(user);
+        log.info("Отправлен ответ DELETE /users/{} с телом: {}", userId, user);
+        return user;
+    }
+
     private void validate(final User user) {
         if (user.getLogin().contains(" ")) {
             log.debug("Пользователь не прошел валидацию по причине: Логин не может содержать пробелы");

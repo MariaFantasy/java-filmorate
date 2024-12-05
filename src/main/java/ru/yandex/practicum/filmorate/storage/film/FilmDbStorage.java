@@ -30,9 +30,8 @@ public class FilmDbStorage implements FilmStorage {
     private static final String ADD_GENRE_QUERY = "MERGE INTO film_genre (film_id, genre_id) VALUES (?, ?)";
     private static final String DELETE_BY_ID_GENRE_QUERY = "DELETE FROM film_genre WHERE film_id = ?";
     private static final String ADD_LIKE_QUERY = "MERGE INTO film_like (film_id, user_id) VALUES (?, ?)";
-    private static final String DELETE_BY_ID_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ?";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
-    private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, l.likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
+    private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, COALESCE(l.likes, 0) AS likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id LEFT JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
 
     @Override
     public Film create(Film film) {
@@ -44,7 +43,11 @@ public class FilmDbStorage implements FilmStorage {
             ps.setObject(2, film.getDescription());
             ps.setObject(3, film.getReleaseDate());
             ps.setObject(4, film.getDuration());
-            ps.setObject(5, film.getMpa().getId(), java.sql.Types.INTEGER);
+            if (film.getMpa() == null) {
+                ps.setObject(5, null, java.sql.Types.INTEGER);
+            } else {
+                ps.setObject(5, film.getMpa().getId(), java.sql.Types.INTEGER);
+            }
             return ps;
         }, keyHolder);
 
@@ -84,8 +87,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film delete(Film film) {
         jdbc.update(DELETE_BY_ID_QUERY, film.getId());
-        jdbc.update(DELETE_BY_ID_GENRE_QUERY, film.getId());
-        jdbc.update(DELETE_BY_ID_LIKE_QUERY, film.getId());
         return film;
     }
 

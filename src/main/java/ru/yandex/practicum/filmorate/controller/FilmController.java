@@ -92,6 +92,15 @@ public class FilmController {
         return topFilms;
     }
 
+    @DeleteMapping("/{filmId}")
+    public Film delete(@PathVariable Long filmId) {
+        log.info("Пришел DELETE запрос /films/{}", filmId);
+        final Film film = filmService.findById(filmId);
+        filmService.delete(film);
+        log.info("Отправлен ответ DELETE /films/{} с телом: {}", filmId, film);
+        return film;
+    }
+
     private void validate(final Film film) {
         if (film.getDescription().length() > 200) {
             log.debug("Фильм не прошел валидацию по причине: Максимальная длина описания — 200 символов");

@@ -117,4 +117,8 @@ public class FilmService {
         genreService.loadGenres(films);
         return films;
     }
+
+    public void delete(Film film) {
+        filmStorage.delete(film);
+    }
 }
