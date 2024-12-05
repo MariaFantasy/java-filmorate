@@ -67,6 +67,20 @@ erDiagram
         bigint director_id FK
     }
 
+    film_review {
+        bigint review_id PK
+        bigint film_id FK
+        bigint user_id FK
+        varchar(200) content
+        boolean is_positive
+        integer useful
+    }
+    film_review_like {
+        bigint review_id FK
+        bigint user_id FK
+        integer like_value
+    }
+
 
     genre ||--o{ film_genre : genre_id
     film ||--o{ film_genre : film_id
@@ -79,6 +93,10 @@ erDiagram
     director ||--o{ film_director : director_id
     film ||--o{ film_director : film_id
 
+    film ||--o{ film_review : film_id
+    user ||--o{ film_review : user_id
+    film_review ||--o{ film_review_like : review_id
+    user ||--o{ film_review_like : user_id
 ```
 
 #### Database Main Queries
