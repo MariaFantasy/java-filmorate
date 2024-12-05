@@ -147,10 +147,6 @@ public class UserController {
     public User delete(@PathVariable Long userId) {
         log.info("Пришел DELETE запрос /users/{}", userId);
         final User user = userService.findById(userId);
-        if (user == null) {
-            log.info("Запрос DELETE /users/{} обработан не был по причине: Пользователь с id = {} не найден", userId, userId);
-            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
-        }
         userService.delete(user);
         log.info("Отправлен ответ DELETE /users/{} с телом: {}", userId, user);
         return user;

@@ -96,10 +96,6 @@ public class FilmController {
     public Film delete(@PathVariable Long filmId) {
         log.info("Пришел DELETE запрос /films/{}", filmId);
         final Film film = filmService.findById(filmId);
-        if (film == null) {
-            log.info("Запрос DELETE /films/{} обработан не был по причине: Фильм с id = {} не найден", filmId, filmId);
-            throw new NotFoundException("Фильм с id = " + filmId + " не найден.");
-        }
         filmService.delete(film);
         log.info("Отправлен ответ DELETE /films/{} с телом: {}", filmId, film);
         return film;
