@@ -69,10 +69,6 @@ public class DirectorController {
     private Director deleteById(@PathVariable Long directorId) {
         log.info("Пришел DELETE запрос /directors/{}", directorId);
         final Director director = directorService.findById(directorId);
-        if (director == null) {
-            log.info("Запрос DELETE /directors/{} обработан не был по причине: Режиссер с id = {} не найден", directorId, directorId);
-            throw new NotFoundException("Режиссер с id = " + directorId + " не найден");
-        }
         directorService.delete(director);
         log.info("Отправлен ответ DELETE /directors/{} с телом: {}", directorId, director);
         return director;
