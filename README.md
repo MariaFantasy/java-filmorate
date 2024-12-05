@@ -38,7 +38,7 @@ erDiagram
         bigint user_id FK
     }
 
-    user {
+    users {
         bigint user_id PK
         varchar email
         varchar login
