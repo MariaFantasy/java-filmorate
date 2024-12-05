@@ -34,6 +34,28 @@ public class FilmDbStorage implements FilmStorage {
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
     private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, l.likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
 
+    private static final String FIND_POPULAR_QUERY =
+            """
+            SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
+                   r.name AS rating_name, fl.likes
+            FROM film AS f
+            LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+            INNER JOIN
+              (SELECT film_id,
+                      COUNT(DISTINCT user_id) AS likes
+               FROM film_like
+               GROUP BY film_id) AS fl ON f.film_id = fl.film_id
+            WHERE (? IS NULL
+                   OR EXTRACT(YEAR
+                              FROM f.release_date) = ?)
+              AND (? IS NULL
+                   OR ? IN
+                     (SELECT genre_id
+                      FROM film_genre
+                      WHERE film_id = f.film_id))
+            ORDER BY fl.likes DESC
+            LIMIT ?""";
+
     @Override
     public Film create(Film film) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -117,5 +139,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopFilmsByLike(Long count) {
         return jdbc.query(TOP_LIST_QUERY, mapper, count);
+    }
+
+    @Override
+    public List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
+        return jdbc.query(FIND_POPULAR_QUERY, mapper, year, year, genreId, genreId, count);
     }
 }

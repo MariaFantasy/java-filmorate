@@ -109,11 +109,8 @@ public class FilmService {
         return film;
     }
 
-    public List<Film> getTopFilmsByLike(Long count) {
-        if (count == null) {
-            count = TOP_LIMIT_N;
-        }
-        List<Film> films = filmStorage.getTopFilmsByLike(count);
+    public List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
+        List<Film> films = filmStorage.getTopFilmsByLike(count, genreId, year);
         genreService.loadGenres(films);
         return films;
     }
