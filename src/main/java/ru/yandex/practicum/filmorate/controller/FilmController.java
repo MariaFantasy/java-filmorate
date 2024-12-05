@@ -85,7 +85,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(defaultValue = "10", required = false) Long count,
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") Long count,
                                        @RequestParam(required = false) Integer genreId,
                                        @RequestParam(required = false) Integer year) {
         log.info("Пришел GET запрос /popular?count={}&genreId={}&year={}", count, genreId, year);
