@@ -104,7 +104,7 @@ public class FilmController {
         log.info("Отправлен ответ GET /films/director/{}?sortBy={} с телом: {}", directorId, sortBy, films);
         return films;
     }
-  
+
     @DeleteMapping("/{filmId}")
     public Film delete(@PathVariable Long filmId) {
         log.info("Пришел DELETE запрос /films/{}", filmId);
