@@ -64,42 +64,44 @@ public class FilmDbStorage implements FilmStorage {
                     ORDER BY fl.likes DESC
                     LIMIT ?""";
 
-    private static final String SEARCH_FILMS_BY_DIRECTOR_SQL = """
-                SELECT 
-                    f.film_id, 
-                    f.name, 
-                    f.description, 
-                    f.release_date, 
-                    f.duration, 
-                    r.rating_id AS rating_id, 
-                    r.name AS rating_name,
-                    d.name AS director_name
-                FROM film AS f
-                LEFT JOIN rating AS r ON f.rating_id = r.rating_id
-                LEFT JOIN film_director AS fd ON f.film_id = fd.film_id
-                LEFT JOIN director AS d ON d.director_id = fd.director_id
-                WHERE LOWER(d.name) LIKE LOWER(?)
-                ORDER BY f.film_id
-            """;
+    private static final String SEARCH_FILMS_BY_DIRECTOR_SQL =
+            """
+                    SELECT
+                             f.film_id,
+                             f.name,
+                             f.description,
+                             f.release_date,
+                             f.duration,
+                             r.rating_id AS rating_id,
+                             r.name AS rating_name,
+                             d.name AS director_name
+                         FROM film AS f
+                         LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+                         LEFT JOIN film_director AS fd ON f.film_id = fd.film_id
+                         LEFT JOIN director AS d ON d.director_id = fd.director_id
+                         WHERE LOWER(d.name) LIKE LOWER(?)
+                         ORDER BY f.film_id
+                     """;
 
 
-    private static final String SEARCH_FILMS_BY_TITLE_SQL = """
-                SELECT 
-                    f.film_id, 
-                    f.name, 
-                    f.description, 
-                    f.release_date, 
-                    f.duration, 
-                    r.rating_id AS rating_id, 
-                    r.name AS rating_name,
-                    d.name AS director_name
-                FROM film AS f
-                LEFT JOIN rating AS r ON f.rating_id = r.rating_id
-                LEFT JOIN film_director AS fd ON f.film_id = fd.film_id
-                LEFT JOIN director AS d ON d.director_id = fd.director_id
-                WHERE LOWER(f.name) LIKE LOWER(?)
-                ORDER BY f.film_id
-            """;
+    private static final String SEARCH_FILMS_BY_TITLE_SQL =
+            """
+                        SELECT
+                            f.film_id,
+                            f.name,
+                            f.description,
+                            f.release_date,
+                            f.duration,
+                            r.rating_id AS rating_id,
+                            r.name AS rating_name,
+                            d.name AS director_name
+                        FROM film AS f
+                        LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+                        LEFT JOIN film_director AS fd ON f.film_id = fd.film_id
+                        LEFT JOIN director AS d ON d.director_id = fd.director_id
+                        WHERE LOWER(f.name) LIKE LOWER(?)
+                        ORDER BY f.film_id
+                    """;
 
 
     @Override
