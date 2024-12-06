@@ -139,6 +139,12 @@ public class FilmService {
     }
 
     public List<Film> getCommonUserFilms(Long userId, Long otherUserId) {
+        if (userService.findById(userId) == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        if (userService.findById(otherUserId) == null) {
+            throw new NotFoundException("Пользователь с id = " + otherUserId + " не найден.");
+        }
         List<Film> films = filmStorage.getCommonUserFilms(userId, otherUserId);
         genreService.loadGenres(films);
         directorService.loadDirectors(films);
