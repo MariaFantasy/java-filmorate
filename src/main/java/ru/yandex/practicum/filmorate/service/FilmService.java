@@ -138,6 +138,13 @@ public class FilmService {
         return films;
     }
 
+    public List<Film> getCommonUserFilms(Long userId, Long otherUserId) {
+        List<Film> films = filmStorage.getCommonUserFilms(userId, otherUserId);
+        genreService.loadGenres(films);
+        directorService.loadDirectors(films);
+        return films;
+    }
+
     public List<Film> getByDirector(Long directorId, String sortType) {
         List<Film> films = filmStorage.getByDirector(directorId);
         genreService.loadGenres(films);
