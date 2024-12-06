@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -137,6 +136,15 @@ public class UserController {
         Collection<User> intersectionOfFriends = userService.getIntersectionOfFriends(user, otherUser);
         log.info("Отправлен ответ GET /users/{}/friends/common/{} с телом: {}", userId, otherId, intersectionOfFriends);
         return intersectionOfFriends;
+    }
+
+    @DeleteMapping("/{userId}")
+    public User delete(@PathVariable Long userId) {
+        log.info("Пришел DELETE запрос /users/{}", userId);
+        final User user = userService.findById(userId);
+        userService.delete(user);
+        log.info("Отправлен ответ DELETE /users/{} с телом: {}", userId, user);
+        return user;
     }
 
     @GetMapping("/{userId}/friends")

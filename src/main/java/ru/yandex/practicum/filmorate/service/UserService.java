@@ -70,4 +70,8 @@ public class UserService {
 
         return filmStorage.getRecommendationByUserId(id);
     }
+
+    public void delete(User user) {
+        userStorage.delete(user);
+    }
 }

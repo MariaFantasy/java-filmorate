@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -85,11 +84,33 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(required = false) Long count) {
-        log.info("Пришел GET запрос /popular/count={}", count);
-        Collection<Film> topFilms = filmService.getTopFilmsByLike(count);
-        log.info("Отправлен ответ GET /popular/count={} с телом: {}", count, topFilms);
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") Long count,
+                                       @RequestParam(required = false) Integer genreId,
+                                       @RequestParam(required = false) Integer year) {
+        log.info("Пришел GET запрос /popular?count={}&genreId={}&year={}", count, genreId, year);
+        Collection<Film> topFilms = filmService.getTopFilmsByLike(count, genreId, year);
+        log.info("Отправлен ответ GET /popular?count={}&genreId={}&year={} с телом: {}", count, genreId, year, topFilms);
         return topFilms;
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
+        log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
+        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes")) {
+            throw new ConditionsNotMetException("Сортировки " + sortBy + " пока не существует.");
+        }
+        Collection<Film> films = filmService.getByDirector(directorId, sortBy);
+        log.info("Отправлен ответ GET /films/director/{}?sortBy={} с телом: {}", directorId, sortBy, films);
+        return films;
+    }
+
+    @DeleteMapping("/{filmId}")
+    public Film delete(@PathVariable Long filmId) {
+        log.info("Пришел DELETE запрос /films/{}", filmId);
+        final Film film = filmService.findById(filmId);
+        filmService.delete(film);
+        log.info("Отправлен ответ DELETE /films/{} с телом: {}", filmId, film);
+        return film;
     }
 
     private void validate(final Film film) {
