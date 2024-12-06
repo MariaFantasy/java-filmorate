@@ -86,17 +86,17 @@ erDiagram
     film ||--o{ film_genre : film_id
     rating ||--o{ film : rating_id
     film ||--o{ film_like : film_id
-    user ||--o{ film_like : user_id
-    user ||--o{ user_friend : user_id
-    user ||--o{ user_friend : friend_id
+    users ||--o{ film_like : user_id
+    users ||--o{ user_friend : user_id
+    users ||--o{ user_friend : friend_id
     friendship_status ||--o{ user_friend : friendship_status_id
     director ||--o{ film_director : director_id
     film ||--o{ film_director : film_id
 
     film ||--o{ film_review : film_id
-    user ||--o{ film_review : user_id
+    users ||--o{ film_review : user_id
     film_review ||--o{ film_review_like : review_id
-    user ||--o{ film_review_like : user_id
+    users ||--o{ film_review_like : user_id
 ```
 
 #### Database Main Queries
