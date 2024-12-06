@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
@@ -26,11 +25,12 @@ import ru.yandex.practicum.filmorate.storage.mpa.mapper.MpaRowMapper;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
@@ -41,7 +41,7 @@ public class FilmControllerTest {
     public static FilmStorage filmStorage = new InMemoryFilmStorage();
 
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
-    public static UserService userService = new UserService(userStorage, friendshipService);
+    public static UserService userService = new UserService(userStorage, friendshipService, filmStorage);
     public static GenreService genreService = new GenreService(genreStorage);
     public static MpaService mpaService = new MpaService(mpaStorage);
     public static DirectorService directorService = new DirectorService(directorStorage);
@@ -120,7 +120,7 @@ public class FilmControllerTest {
         Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
         User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User createdUser = userStorage.create(user);
-        assertThrows(NotFoundException.class, () ->  filmController.addLike(film.getId(), createdUser.getId()));
+        assertThrows(NotFoundException.class, () -> filmController.addLike(film.getId(), createdUser.getId()));
     }
 
 //    @Test
