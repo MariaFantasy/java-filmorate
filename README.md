@@ -62,9 +62,9 @@ erDiagram
     film ||--o{ film_genre : film_id
     rating ||--o{ film : rating_id
     film ||--o{ film_like : film_id
-    user ||--o{ film_like : user_id
-    user ||--o{ user_friend : user_id
-    user ||--o{ user_friend : friend_id
+    users ||--o{ film_like : user_id
+    users ||--o{ user_friend : user_id
+    users ||--o{ user_friend : friend_id
     friendship_status ||--o{ user_friend : friendship_status_id
 
 ```
