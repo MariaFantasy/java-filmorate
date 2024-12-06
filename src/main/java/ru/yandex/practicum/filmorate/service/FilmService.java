@@ -171,7 +171,15 @@ public class FilmService {
             resultFilms.addAll(filmStorage.searchFilmsByDirector(query));
         }
 
-        return new ArrayList<>(resultFilms);
+        genreService.loadGenres(resultFilms);
+        directorService.loadDirectors(resultFilms);
+
+        List<Film> sortedFilms = new ArrayList<>(resultFilms);
+        filmStorage.loadLikes(sortedFilms);
+        sortedFilms.sort((film1, film2) -> Integer.compare(film2.getLikedUsers().size(), film1.getLikedUsers().size()));
+
+        return sortedFilms;
+
     }
 
 }
