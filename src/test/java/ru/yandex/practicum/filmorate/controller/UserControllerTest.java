@@ -1,30 +1,32 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import ru.yandex.practicum.filmorate.service.FriendshipService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.InMemoryFriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Set;
 import java.time.LocalDate;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserControllerTest {
     public static UserStorage userStorage = new InMemoryUserStorage();
+    public static FilmStorage filmStorage = new InMemoryFilmStorage();
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
-    public static UserService userService = new UserService(userStorage, friendshipService);
+    public static UserService userService = new UserService(userStorage, friendshipService, filmStorage);
     public static UserController userController = new UserController(userService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
