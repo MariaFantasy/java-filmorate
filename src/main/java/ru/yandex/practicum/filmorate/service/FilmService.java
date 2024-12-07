@@ -161,4 +161,8 @@ public class FilmService {
     public void delete(Film film) {
         filmStorage.delete(film);
     }
+
+    public List<Film> getRecommendationByUserId(Long userID) {
+        return filmStorage.getRecommendationByUserId(userID);
+    }
 }

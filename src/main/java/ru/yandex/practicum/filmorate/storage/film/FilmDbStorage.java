@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
@@ -205,12 +204,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendationByUserId(Long userID) {
-        try {
-            return jdbc.query(RECOMMENDATION_LIST_QUERY, mapper, userID, userID);
-        } catch (BadSqlGrammarException e) {
-            System.out.println(e.getSql());
-            return List.of();
-        }
+        return jdbc.query(RECOMMENDATION_LIST_QUERY, mapper, userID, userID);
     }
 
     public List<Film> getByDirector(Long directorId) {

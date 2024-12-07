@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -14,14 +13,14 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
     private final FriendshipService friendshipService;
-    private final FilmStorage filmStorage;
+    private final FilmService filmService;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
                        FriendshipService friendshipService,
-                       @Qualifier("filmDbStorage") FilmStorage filmStorage) {
+                       FilmService filmService) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
-        this.filmStorage = filmStorage;
+        this.filmService = filmService;
     }
 
     public Collection<User> findAll() {
@@ -68,7 +67,7 @@ public class UserService {
     public List<Film> getRecommendationsByUserId(Long id) {
         userStorage.findById(id);
 
-        return filmStorage.getRecommendationByUserId(id);
+        return filmService.getRecommendationByUserId(id);
     }
 
     public void delete(User user) {
