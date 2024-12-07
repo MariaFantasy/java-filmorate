@@ -94,11 +94,8 @@ public class FilmDbStorage implements FilmStorage {
                             f.duration,
                             r.rating_id AS rating_id,
                             r.name AS rating_name,
-                            d.name AS director_name
                         FROM film AS f
                         LEFT JOIN rating AS r ON f.rating_id = r.rating_id
-                        LEFT JOIN film_director AS fd ON f.film_id = fd.film_id
-                        LEFT JOIN director AS d ON d.director_id = fd.director_id
                         WHERE LOWER(f.name) LIKE LOWER(?)
                         ORDER BY f.film_id
                     """;
