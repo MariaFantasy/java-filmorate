@@ -95,8 +95,7 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public Collection<Film> getCommon(@RequestParam(required = true) Long userId,
-                                      @RequestParam(required = true) Long friendId) {
+    public Collection<Film> getCommon(@RequestParam Long userId, @RequestParam Long friendId) {
         log.info("Пришел GET запрос /common?userId={}&friendId={}", userId, friendId);
         Collection<Film> commonFilms = filmService.getCommonUserFilms(userId, friendId);
         log.info("Отправлен ответ GET /common?userId={}&friendId={} с телом: {}", userId, friendId, commonFilms);
