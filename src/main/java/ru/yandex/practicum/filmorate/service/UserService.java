@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -13,14 +16,15 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
     private final FriendshipService friendshipService;
-    private final FilmService filmService;
+
+    @Lazy
+    @Autowired
+    private FilmService filmService;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       FriendshipService friendshipService,
-                       FilmService filmService) {
+                       FriendshipService friendshipService) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
-        this.filmService = filmService;
     }
 
     public Collection<User> findAll() {

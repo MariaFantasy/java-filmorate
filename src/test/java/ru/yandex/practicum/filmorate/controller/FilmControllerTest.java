@@ -41,7 +41,7 @@ public class FilmControllerTest {
     public static FilmStorage filmStorage = new InMemoryFilmStorage();
 
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
-    public static UserService userService = new UserService(userStorage, friendshipService, filmStorage);
+    public static UserService userService = new UserService(userStorage, friendshipService);
     public static GenreService genreService = new GenreService(genreStorage);
     public static MpaService mpaService = new MpaService(mpaStorage);
     public static DirectorService directorService = new DirectorService(directorStorage);
