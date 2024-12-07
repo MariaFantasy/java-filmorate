@@ -94,6 +94,14 @@ public class FilmController {
         return topFilms;
     }
 
+    @GetMapping("/common")
+    public Collection<Film> getCommon(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Пришел GET запрос /common?userId={}&friendId={}", userId, friendId);
+        Collection<Film> commonFilms = filmService.getCommonUserFilms(userId, friendId);
+        log.info("Отправлен ответ GET /common?userId={}&friendId={} с телом: {}", userId, friendId, commonFilms);
+        return commonFilms;
+    }
+
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
         log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
