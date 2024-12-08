@@ -82,6 +82,7 @@ public class ReviewDBStorage implements ReviewStorage {
         }, keyHolder);
 
         Long id = keyHolder.getKeyAs(Long.class);
+        review.setReviewId(id);
 
         return findById(id);
     }

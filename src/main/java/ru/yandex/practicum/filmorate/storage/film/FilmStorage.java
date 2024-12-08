@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,7 +26,11 @@ public interface FilmStorage {
     public List<Film> getTopFilmsByLike(Long count);
 
     default List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
-        return getTopFilmsByLike(count);   // ignore genreId & year for in-memory storage
+        return getTopFilmsByLike(count);   // ignore searching by genreId & year for in-memory storage
+    }
+
+    default List<Film> getCommonUserFilms(Long thisUserId, Long otherUserId) {
+        return new ArrayList<>();  // returns empty list for in-memory but see @Override implementation in FilmDbStorage
     }
 
     public List<Film> getByDirector(Long directorId);
@@ -35,4 +40,7 @@ public interface FilmStorage {
     public List<Film> searchFilmsByTitle(String query);
 
     public List<Film> searchFilmsByDirector(String query);
+  
+    public List<Film> getRecommendationByUserId(Long userID);
+
 }

@@ -83,7 +83,6 @@ public class FilmDbStorage implements FilmStorage {
                          ORDER BY f.film_id
                      """;
 
-
     private static final String SEARCH_FILMS_BY_TITLE_SQL =
             """
                         SELECT
@@ -100,6 +99,86 @@ public class FilmDbStorage implements FilmStorage {
                         ORDER BY f.film_id
                     """;
 
+    private static final String FIND_POPULAR_QUERY = """
+            SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
+                   r.name AS rating_name, fl.likes
+            FROM film AS f
+            LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+            INNER JOIN
+              (SELECT film_id,
+                      COUNT(DISTINCT user_id) AS likes
+               FROM film_like
+               GROUP BY film_id) AS fl ON f.film_id = fl.film_id
+            WHERE (? IS NULL
+                   OR EXTRACT(YEAR
+                              FROM f.release_date) = ?)
+              AND (? IS NULL
+                   OR ? IN
+                     (SELECT genre_id
+                      FROM film_genre
+                      WHERE film_id = f.film_id))
+            ORDER BY fl.likes DESC
+            LIMIT ?""";
+
+    private static final String RECOMMENDATION_LIST_QUERY = """
+            SELECT
+                f.film_id,
+                f.name,
+                f.description,
+                f.release_date,
+                f.duration,
+                f.rating_id,
+                r.name AS rating_name
+            FROM film AS f
+            LEFT JOIN rating AS r
+            ON f.rating_id = r.rating_id
+            WHERE f.film_id IN (
+                SELECT
+                    fl.film_id
+                FROM film_like AS fl
+                INNER JOIN (
+                    SELECT
+                        ul.user_id,
+                        COUNT(ul.film_id) AS balls
+                    FROM film_like AS ul
+                    INNER JOIN (
+                        SELECT
+                            film_id
+                        FROM film_like
+                        WHERE user_id = ?
+                    ) AS sf
+                    ON ul.film_id = sf.film_id
+                    GROUP BY ul.user_id
+                ) AS fb
+                ON fl.user_id = fb.user_id
+                WHERE fl.film_id NOT IN (
+                    SELECT
+                        film_id
+                    FROM film_like
+                    WHERE user_id = ?
+                )
+                GROUP BY fl.film_id
+                ORDER BY SUM(fb.balls) DESC
+            );
+            """;
+
+    private static final String FIND_COMMON_QUERY = """
+            SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
+                   r.name AS rating_name, fl.likes
+            FROM film AS f
+            LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+            INNER JOIN
+              (SELECT film_id,
+                      COUNT(DISTINCT user_id) AS likes
+               FROM film_like
+               GROUP BY film_id) AS fl ON f.film_id = fl.film_id
+            WHERE f.film_id IN
+                (SELECT film_id
+                 FROM film_like
+                 WHERE user_id = ? INTERSECT
+                   SELECT film_id
+                   FROM film_like WHERE user_id = ?)
+            ORDER BY fl.likes DESC""";
 
     @Override
     public Film create(Film film) {
@@ -200,6 +279,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getRecommendationByUserId(Long userID) {
+        return jdbc.query(RECOMMENDATION_LIST_QUERY, mapper, userID, userID);
+    }
+
     public List<Film> getByDirector(Long directorId) {
         return jdbc.query(FIND_ALL_BY_DIRECTOR_QUERY, mapper, directorId);
     }
@@ -233,6 +316,11 @@ public class FilmDbStorage implements FilmStorage {
 
     public List<Film> searchFilmsByDirector(String query) {
         return jdbc.query(SEARCH_FILMS_BY_DIRECTOR_SQL, mapper, "%" + query + "%");
+    }
+
+    @Override
+    public List<Film> getCommonUserFilms(Long thisUserId, Long otherUserId) {
+        return jdbc.query(FIND_COMMON_QUERY, mapper, thisUserId, otherUserId);
     }
 
 }
