@@ -119,7 +119,7 @@ public class FilmService {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         filmStorage.addLike(film, user);
-        feedService.create(userId, filmId, EventType.valueOf("LIKE"), Operation.valueOf("ADD"));
+        feedService.create(userId, filmId, EventType.LIKE, Operation.ADD);
 
         return film;
     }
@@ -134,7 +134,7 @@ public class FilmService {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         filmStorage.deleteLike(film, user);
-        feedService.create(userId, filmId, EventType.valueOf("LIKE"), Operation.valueOf("REMOVE"));
+        feedService.create(userId, filmId, EventType.LIKE, Operation.REMOVE);
 
         return film;
     }

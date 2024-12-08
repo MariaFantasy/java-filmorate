@@ -50,7 +50,7 @@ public class UserService {
 
     public void addFiend(User user, User newFriend) {
         friendshipService.addFiend(user, newFriend);
-        feedService.create(user.getId(), newFriend.getId(), EventType.valueOf("FRIEND"), Operation.valueOf("ADD"));
+        feedService.create(user.getId(), newFriend.getId(), EventType.FRIEND, Operation.ADD);
     }
 
     public void confirmFriend(User user, User newFriend) {
@@ -59,7 +59,7 @@ public class UserService {
 
     public void deleteFriend(User user, User oldFriend) {
         friendshipService.deleteFriend(user, oldFriend);
-        feedService.create(user.getId(), oldFriend.getId(), EventType.valueOf("FRIEND"), Operation.valueOf("REMOVE"));
+        feedService.create(user.getId(), oldFriend.getId(), EventType.FRIEND, Operation.REMOVE);
     }
 
     public Set<User> getIntersectionOfFriends(User user1, User user2) {
@@ -72,7 +72,8 @@ public class UserService {
         userStorage.delete(user);
     }
 
-    public Collection<Event> getUserFeed(User user) {
+    public Collection<Event> getUserFeed(Long userId) {
+        final User user = findById(userId);
         return feedService.getUserFeed(user);
     }
 }
