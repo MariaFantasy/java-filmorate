@@ -8,8 +8,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.FriendshipService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.feed.InMemoryFeedStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.InMemoryFriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
@@ -23,8 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserControllerTest {
     public static UserStorage userStorage = new InMemoryUserStorage();
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
+    public static FeedStorage feedStorage = new InMemoryFeedStorage();
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
-    public static UserService userService = new UserService(userStorage, friendshipService);
+    public static FeedService feedService = new FeedService(feedStorage);
+    public static UserService userService = new UserService(userStorage, friendshipService, feedService);
     public static UserController userController = new UserController(userService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
