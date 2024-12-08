@@ -19,14 +19,13 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendshipService friendshipService;
     private final FeedService feedService;
-
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipService friendshipService, FeedService feedService) {
     @Lazy
     @Autowired
     private FilmService filmService;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       FriendshipService friendshipService) {
+                       FriendshipService friendshipService,
+                       FeedService feedService) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
         this.feedService = feedService;
