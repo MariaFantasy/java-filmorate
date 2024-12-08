@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -150,6 +151,15 @@ public class UserController {
         userService.delete(user);
         log.info("Отправлен ответ DELETE /users/{} с телом: {}", userId, user);
         return user;
+    }
+
+    @GetMapping("/{userId}/feed")
+    public Collection<Event> getUserFeed(@PathVariable Long userId) {
+        log.info("Пришел GET запрос /users/{}/feed", userId);
+        final User user = userService.findById(userId);
+        final Collection<Event> userFeed = userService.getUserFeed(user);
+        log.info("Отправлен ответ GET /users/{}/feed с телом: {}", userId, userFeed);
+        return userFeed;
     }
 
     private void validate(final User user) {
