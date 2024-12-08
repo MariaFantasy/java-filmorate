@@ -19,10 +19,10 @@ public class FeedService {
         this.feedStorage = feedStorage;
     }
 
-    public Event create(Long user_id, Long entity_id, EventType eventType, Operation operation) {
+    public Event create(Long userId, Long entityId, EventType eventType, Operation operation) {
         Event event = new Event();
-        event.setUserId(user_id);
-        event.setEntityId(entity_id);
+        event.setUserId(userId);
+        event.setEntityId(entityId);
         event.setEventType(eventType);
         event.setOperation(operation);
         event.setTimestamp(Instant.now().toEpochMilli());
