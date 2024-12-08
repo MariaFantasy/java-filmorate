@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.service.*;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.director.mapper.DirectorRowMapper;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.feed.InMemoryFeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
@@ -34,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
+    public static FeedStorage feedStorage = new InMemoryFeedStorage();
     public static UserStorage userStorage = new InMemoryUserStorage();
     public static GenreStorage genreStorage = new GenreDbStorage(new JdbcTemplate(), new GenreRowMapper());
     public static MpaStorage mpaStorage = new MpaDbStorage(new JdbcTemplate(), new MpaRowMapper());
@@ -41,11 +44,12 @@ public class FilmControllerTest {
     public static FilmStorage filmStorage = new InMemoryFilmStorage();
 
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
-    public static UserService userService = new UserService(userStorage, friendshipService);
+    public static FeedService feedService = new FeedService(feedStorage);
+    public static UserService userService = new UserService(userStorage, friendshipService, feedService);
     public static GenreService genreService = new GenreService(genreStorage);
     public static MpaService mpaService = new MpaService(mpaStorage);
     public static DirectorService directorService = new DirectorService(directorStorage);
-    public static FilmService filmService = new FilmService(filmStorage, userService, genreService, mpaService, directorService);
+    public static FilmService filmService = new FilmService(filmStorage, userService, genreService, mpaService, directorService, feedService);
 
     public static FilmController filmController = new FilmController(filmService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

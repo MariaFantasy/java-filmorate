@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.types.EventType;
+import ru.yandex.practicum.filmorate.model.types.Operation;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -15,15 +18,17 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
     private final FriendshipService friendshipService;
-
+    private final FeedService feedService;
     @Lazy
     @Autowired
     private FilmService filmService;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       FriendshipService friendshipService) {
+                       FriendshipService friendshipService,
+                       FeedService feedService) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
+        this.feedService = feedService;
     }
 
     public Collection<User> findAll() {
@@ -50,6 +55,7 @@ public class UserService {
 
     public void addFiend(User user, User newFriend) {
         friendshipService.addFiend(user, newFriend);
+        feedService.create(user.getId(), newFriend.getId(), EventType.FRIEND, Operation.ADD);
     }
 
     public void confirmFriend(User user, User newFriend) {
@@ -58,6 +64,7 @@ public class UserService {
 
     public void deleteFriend(User user, User oldFriend) {
         friendshipService.deleteFriend(user, oldFriend);
+        feedService.create(user.getId(), oldFriend.getId(), EventType.FRIEND, Operation.REMOVE);
     }
 
     public Set<User> getIntersectionOfFriends(User user1, User user2) {
@@ -75,5 +82,10 @@ public class UserService {
 
     public void delete(User user) {
         userStorage.delete(user);
+    }
+
+    public Collection<Event> getUserFeed(Long userId) {
+        final User user = findById(userId);
+        return feedService.getUserFeed(user);
     }
 }

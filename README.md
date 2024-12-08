@@ -5,8 +5,6 @@ Template repository for Filmorate project.
 
 ## DataBase
 
-
-
 ```mermaid
 erDiagram
     genre {
@@ -75,10 +73,20 @@ erDiagram
         boolean is_positive
         integer useful
     }
+    
     film_review_like {
         bigint review_id FK
         bigint user_id FK
         integer like_value
+    }
+    
+    event {
+        bigint event_id PK
+        bigint user_id FK
+        bigint entity_id FK
+        varchar event_type
+        varchar operation
+        bigint timestamp
     }
 
 
@@ -92,11 +100,14 @@ erDiagram
     friendship_status ||--o{ user_friend : friendship_status_id
     director ||--o{ film_director : director_id
     film ||--o{ film_director : film_id
-
     film ||--o{ film_review : film_id
     users ||--o{ film_review : user_id
     film_review ||--o{ film_review_like : review_id
     users ||--o{ film_review_like : user_id
+    users ||--o{ event : user_id
+    users ||--o{ event : entity_id
+    film ||--o{ event : entity_id
+    film_review ||--o{ event : entity_id
 ```
 
 #### Database Main Queries
