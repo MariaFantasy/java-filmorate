@@ -36,4 +36,6 @@ public interface FilmStorage {
     public List<Film> getByDirector(Long directorId);
 
     public void loadLikes(Collection<Film> films);
+
+    public List<Film> getRecommendationByUserId(Long userID);
 }

@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -173,5 +173,9 @@ public class FilmService {
 
     public void delete(Film film) {
         filmStorage.delete(film);
+    }
+
+    public List<Film> getRecommendationByUserId(Long userID) {
+        return filmStorage.getRecommendationByUserId(userID);
     }
 }
