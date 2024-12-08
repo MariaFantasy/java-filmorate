@@ -27,6 +27,7 @@ import static java.util.function.UnaryOperator.identity;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
+
     private static final String FIND_ALL_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id ORDER BY f.film_id";
     private static final String FIND_BY_ID_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id WHERE f.film_id = ?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM film WHERE film_id = ?";
@@ -103,6 +104,24 @@ public class FilmDbStorage implements FilmStorage {
             );
             """;
 
+    private static final String FIND_COMMON_QUERY = """
+            SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
+                   r.name AS rating_name, fl.likes
+            FROM film AS f
+            LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+            INNER JOIN
+              (SELECT film_id,
+                      COUNT(DISTINCT user_id) AS likes
+               FROM film_like
+               GROUP BY film_id) AS fl ON f.film_id = fl.film_id
+            WHERE f.film_id IN
+                (SELECT film_id
+                 FROM film_like
+                 WHERE user_id = ? INTERSECT
+                   SELECT film_id
+                   FROM film_like WHERE user_id = ?)
+            ORDER BY fl.likes DESC""";
+
     @Override
     public Film create(Film film) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -156,7 +175,6 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         jdbc.update(DELETE_BY_ID_GENRE_QUERY, film.getId());
-
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {
                 jdbc.update(ADD_GENRE_QUERY, film.getId(), genre.getId());
@@ -232,5 +250,10 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopFilmsByLike(Long count, Integer genreId, Integer year) {
         return jdbc.query(FIND_POPULAR_QUERY, mapper, year, year, genreId, genreId, count);
+    }
+
+    @Override
+    public List<Film> getCommonUserFilms(Long thisUserId, Long otherUserId) {
+        return jdbc.query(FIND_COMMON_QUERY, mapper, thisUserId, otherUserId);
     }
 }
