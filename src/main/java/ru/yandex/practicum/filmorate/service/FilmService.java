@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.types.EventType;
+import ru.yandex.practicum.filmorate.model.types.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
@@ -22,13 +24,15 @@ public class FilmService {
     private final GenreService genreService;
     private final MpaService mpaService;
     private final DirectorService directorService;
+    private final FeedService feedService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService, GenreService genreService, MpaService mpaService, DirectorService directorService) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService, GenreService genreService, MpaService mpaService, DirectorService directorService, FeedService feedService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.genreService = genreService;
         this.mpaService = mpaService;
         this.directorService = directorService;
+        this.feedService = feedService;
     }
 
     public Collection<Film> findAll() {
@@ -115,6 +119,8 @@ public class FilmService {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         filmStorage.addLike(film, user);
+        feedService.create(userId, filmId, EventType.valueOf("LIKE"), Operation.valueOf("ADD"));
+
         return film;
     }
 
@@ -128,6 +134,8 @@ public class FilmService {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
         filmStorage.deleteLike(film, user);
+        feedService.create(userId, filmId, EventType.valueOf("LIKE"), Operation.valueOf("REMOVE"));
+
         return film;
     }
 

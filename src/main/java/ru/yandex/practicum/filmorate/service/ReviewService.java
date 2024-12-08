@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.types.EventType;
+import ru.yandex.practicum.filmorate.model.types.Operation;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 
 import java.util.List;
@@ -13,14 +15,16 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserService userService;
     private final FilmService filmService;
-
+    private final FeedService feedService;
 
     public ReviewService(@Qualifier("reviewDbStorage") ReviewStorage reviewStorage,
                          UserService userService,
-                         FilmService filmService) {
+                         FilmService filmService,
+                         FeedService feedService) {
         this.reviewStorage = reviewStorage;
         this.userService = userService;
         this.filmService = filmService;
+        this.feedService = feedService;
     }
 
     public List<Review> findByParameter(Long filmId, int count) {
@@ -43,17 +47,22 @@ public class ReviewService {
         filmService.findById(review.getFilmId());
         userService.findById(review.getUserId());
 
-        return reviewStorage.create(review);
+        reviewStorage.create(review);
+        feedService.create(review.getUserId(), review.getReviewId(), EventType.valueOf("REVIEW"), Operation.valueOf("ADD"));
+
+        return review;
     }
 
     public Review update(Review review) {
         reviewStorage.findById(review.getReviewId());
+        feedService.create(review.getUserId(), review.getReviewId(), EventType.valueOf("REVIEW"), Operation.valueOf("UPDATE"));
         return reviewStorage.update(review);
     }
 
     public Review delete(long id) {
         Review review = findById(id);
         reviewStorage.delete(id);
+        feedService.create(review.getUserId(), review.getReviewId(), EventType.valueOf("REVIEW"), Operation.valueOf("REMOVE"));
 
         return review;
     }
