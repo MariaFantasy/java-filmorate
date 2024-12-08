@@ -8,15 +8,11 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.types.EventType;
 import ru.yandex.practicum.filmorate.model.types.Operation;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class FilmService {
@@ -182,6 +178,29 @@ public class FilmService {
 
     public void delete(Film film) {
         filmStorage.delete(film);
+    }
+
+    public Collection<Film> search(String query, String by) {
+        String[] searchFields = by.split(",");
+        Set<Film> resultFilms = new LinkedHashSet<>();
+
+        if (Arrays.asList(searchFields).contains("title")) {
+            resultFilms.addAll(filmStorage.searchFilmsByTitle(query));
+        }
+
+        if (Arrays.asList(searchFields).contains("director")) {
+            resultFilms.addAll(filmStorage.searchFilmsByDirector(query));
+        }
+
+        genreService.loadGenres(resultFilms);
+        directorService.loadDirectors(resultFilms);
+
+        List<Film> sortedFilms = new ArrayList<>(resultFilms);
+        filmStorage.loadLikes(sortedFilms);
+        sortedFilms.sort((film1, film2) -> Integer.compare(film2.getLikedUsers().size(), film1.getLikedUsers().size()));
+
+        return sortedFilms;
+
     }
 
     public List<Film> getRecommendationByUserId(Long userID) {

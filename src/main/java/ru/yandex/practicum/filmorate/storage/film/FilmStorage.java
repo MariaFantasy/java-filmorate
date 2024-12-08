@@ -37,5 +37,10 @@ public interface FilmStorage {
 
     public void loadLikes(Collection<Film> films);
 
+    public List<Film> searchFilmsByTitle(String query);
+
+    public List<Film> searchFilmsByDirector(String query);
+
     public List<Film> getRecommendationByUserId(Long userID);
+
 }

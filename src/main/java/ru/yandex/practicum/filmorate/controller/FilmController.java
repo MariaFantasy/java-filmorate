@@ -121,6 +121,14 @@ public class FilmController {
         return film;
     }
 
+    @GetMapping("/search")
+    public Collection<Film> search(@RequestParam String query, @RequestParam String by) {
+        log.info("Пришел GET запрос /films/search с query={} и by={}", query, by);
+        Collection<Film> filmsFound = filmService.search(query, by);
+        log.info("Отправлен ответ GET /films/search с телом: {}", filmsFound);
+        return filmsFound;
+    }
+
     private void validate(final Film film) {
         if (film.getDescription().length() > 200) {
             log.debug("Фильм не прошел валидацию по причине: Максимальная длина описания — 200 символов");

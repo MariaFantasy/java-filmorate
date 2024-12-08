@@ -41,26 +41,63 @@ public class FilmDbStorage implements FilmStorage {
     private static final String FIND_ALL_BY_DIRECTOR_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id INNER JOIN film_director AS fd ON f.film_id = fd.film_id WHERE fd.director_id = ?";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM film_like WHERE film_id = ? AND user_id = ?";
     private static final String TOP_LIST_QUERY = "SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id, r.name as rating_name, COALESCE(l.likes, 0) AS likes FROM film AS f LEFT JOIN rating AS r ON f.rating_id = r.rating_id LEFT JOIN (SELECT film_id, COUNT(DISTINCT user_id) AS likes FROM film_like GROUP BY film_id) AS l ON f.film_id = l.film_id ORDER BY likes DESC LIMIT ?";
-    private static final String FIND_POPULAR_QUERY = """
-            SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
-                   r.name AS rating_name, fl.likes
-            FROM film AS f
-            LEFT JOIN rating AS r ON f.rating_id = r.rating_id
-            INNER JOIN
-              (SELECT film_id,
-                      COUNT(DISTINCT user_id) AS likes
-               FROM film_like
-               GROUP BY film_id) AS fl ON f.film_id = fl.film_id
-            WHERE (? IS NULL
-                   OR EXTRACT(YEAR
-                              FROM f.release_date) = ?)
-              AND (? IS NULL
-                   OR ? IN
-                     (SELECT genre_id
-                      FROM film_genre
-                      WHERE film_id = f.film_id))
-            ORDER BY fl.likes DESC
-            LIMIT ?""";
+
+    private static final String FIND_POPULAR_QUERY =
+            """
+                    SELECT f.film_id, f.name, f.description, f.release_date, f.duration, f.rating_id,
+                           r.name AS rating_name, fl.likes
+                    FROM film AS f
+                    LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+                    INNER JOIN
+                      (SELECT film_id,
+                              COUNT(DISTINCT user_id) AS likes
+                       FROM film_like
+                       GROUP BY film_id) AS fl ON f.film_id = fl.film_id
+                    WHERE (? IS NULL
+                           OR EXTRACT(YEAR
+                                      FROM f.release_date) = ?)
+                      AND (? IS NULL
+                           OR ? IN
+                             (SELECT genre_id
+                              FROM film_genre
+                              WHERE film_id = f.film_id))
+                    ORDER BY fl.likes DESC
+                    LIMIT ?""";
+
+    private static final String SEARCH_FILMS_BY_DIRECTOR_SQL =
+            """
+                    SELECT
+                             f.film_id,
+                             f.name,
+                             f.description,
+                             f.release_date,
+                             f.duration,
+                             r.rating_id AS rating_id,
+                             r.name AS rating_name,
+                             d.name AS director_name
+                         FROM film AS f
+                         LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+                         LEFT JOIN film_director AS fd ON f.film_id = fd.film_id
+                         LEFT JOIN director AS d ON d.director_id = fd.director_id
+                         WHERE LOWER(d.name) LIKE LOWER(?)
+                         ORDER BY f.film_id
+                     """;
+
+    private static final String SEARCH_FILMS_BY_TITLE_SQL =
+            """
+                        SELECT
+                            f.film_id,
+                            f.name,
+                            f.description,
+                            f.release_date,
+                            f.duration,
+                            r.rating_id AS rating_id,
+                            r.name AS rating_name,
+                        FROM film AS f
+                        LEFT JOIN rating AS r ON f.rating_id = r.rating_id
+                        WHERE LOWER(f.name) LIKE LOWER(?)
+                        ORDER BY f.film_id
+                    """;
 
     private static final String RECOMMENDATION_LIST_QUERY = """
             SELECT
@@ -252,8 +289,17 @@ public class FilmDbStorage implements FilmStorage {
         return jdbc.query(FIND_POPULAR_QUERY, mapper, year, year, genreId, genreId, count);
     }
 
+    public List<Film> searchFilmsByTitle(String query) {
+        return jdbc.query(SEARCH_FILMS_BY_TITLE_SQL, mapper, "%" + query + "%");
+    }
+
+    public List<Film> searchFilmsByDirector(String query) {
+        return jdbc.query(SEARCH_FILMS_BY_DIRECTOR_SQL, mapper, "%" + query + "%");
+    }
+
     @Override
     public List<Film> getCommonUserFilms(Long thisUserId, Long otherUserId) {
         return jdbc.query(FIND_COMMON_QUERY, mapper, thisUserId, otherUserId);
     }
+
 }
