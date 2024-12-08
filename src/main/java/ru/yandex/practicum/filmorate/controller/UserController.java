@@ -156,8 +156,7 @@ public class UserController {
     @GetMapping("/{userId}/feed")
     public Collection<Event> getUserFeed(@PathVariable Long userId) {
         log.info("Пришел GET запрос /users/{}/feed", userId);
-        final User user = userService.findById(userId);
-        final Collection<Event> userFeed = userService.getUserFeed(user);
+        final Collection<Event> userFeed = userService.getUserFeed(userId);
         log.info("Отправлен ответ GET /users/{}/feed с телом: {}", userId, userFeed);
         return userFeed;
     }
