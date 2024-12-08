@@ -1,17 +1,17 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.types.EventType;
 import ru.yandex.practicum.filmorate.model.types.Operation;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +21,12 @@ public class UserService {
     private final FeedService feedService;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendshipService friendshipService, FeedService feedService) {
+    @Lazy
+    @Autowired
+    private FilmService filmService;
+
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FriendshipService friendshipService) {
         this.userStorage = userStorage;
         this.friendshipService = friendshipService;
         this.feedService = feedService;
@@ -66,6 +72,13 @@ public class UserService {
         return friendshipService.getIntersectionOfFriends(user1, user2).stream()
                 .map(this::findById)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+
+    public List<Film> getRecommendationsByUserId(Long id) {
+        userStorage.findById(id);
+
+        return filmService.getRecommendationByUserId(id);
     }
 
     public void delete(User user) {

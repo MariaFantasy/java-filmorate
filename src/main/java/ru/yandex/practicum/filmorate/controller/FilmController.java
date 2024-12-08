@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -92,6 +91,14 @@ public class FilmController {
         Collection<Film> topFilms = filmService.getTopFilmsByLike(count, genreId, year);
         log.info("Отправлен ответ GET /popular?count={}&genreId={}&year={} с телом: {}", count, genreId, year, topFilms);
         return topFilms;
+    }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommon(@RequestParam Long userId, @RequestParam Long friendId) {
+        log.info("Пришел GET запрос /common?userId={}&friendId={}", userId, friendId);
+        Collection<Film> commonFilms = filmService.getCommonUserFilms(userId, friendId);
+        log.info("Отправлен ответ GET /common?userId={}&friendId={} с телом: {}", userId, friendId, commonFilms);
+        return commonFilms;
     }
 
     @GetMapping("/director/{directorId}")

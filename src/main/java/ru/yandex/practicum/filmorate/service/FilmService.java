@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -146,6 +147,19 @@ public class FilmService {
         return films;
     }
 
+    public List<Film> getCommonUserFilms(Long userId, Long otherUserId) {
+        if (userService.findById(userId) == null) {
+            throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
+        }
+        if (userService.findById(otherUserId) == null) {
+            throw new NotFoundException("Пользователь с id = " + otherUserId + " не найден.");
+        }
+        List<Film> films = filmStorage.getCommonUserFilms(userId, otherUserId);
+        genreService.loadGenres(films);
+        directorService.loadDirectors(films);
+        return films;
+    }
+
     public List<Film> getByDirector(Long directorId, String sortType) {
         List<Film> films = filmStorage.getByDirector(directorId);
         genreService.loadGenres(films);
@@ -168,5 +182,9 @@ public class FilmService {
 
     public void delete(Film film) {
         filmStorage.delete(film);
+    }
+
+    public List<Film> getRecommendationByUserId(Long userID) {
+        return filmStorage.getRecommendationByUserId(userID);
     }
 }
