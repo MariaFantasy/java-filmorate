@@ -157,6 +157,7 @@ public class FilmService {
     }
 
     public List<Film> getByDirector(Long directorId, String sortType) {
+        directorService.findById(directorId);
         List<Film> films = filmStorage.getByDirector(directorId);
         genreService.loadGenres(films);
         directorService.loadDirectors(films);
@@ -204,6 +205,9 @@ public class FilmService {
     }
 
     public List<Film> getRecommendationByUserId(Long userID) {
-        return filmStorage.getRecommendationByUserId(userID);
+        List<Film> recommendations = filmStorage.getRecommendationByUserId(userID);
+        genreService.loadGenres(recommendations);
+        directorService.loadDirectors(recommendations);
+        return recommendations;
     }
 }

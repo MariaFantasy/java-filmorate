@@ -54,9 +54,9 @@ public class ReviewService {
     }
 
     public Review update(Review review) {
-        reviewStorage.findById(review.getReviewId());
-        feedService.create(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.UPDATE);
-        return reviewStorage.update(review);
+        Review updatedReview = reviewStorage.update(review);
+        feedService.create(updatedReview.getUserId(), updatedReview.getReviewId(), EventType.REVIEW, Operation.UPDATE);
+        return updatedReview;
     }
 
     public Review delete(long id) {

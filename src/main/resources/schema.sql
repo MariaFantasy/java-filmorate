@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS user_friend (
     friend_id BIGINT NOT NULL,
     friendship_status_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (friend_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (friendship_status_id) REFERENCES friendship_status(friendship_status_id),
     CONSTRAINT user_friend_PK PRIMARY KEY (user_id, friend_id)
 );

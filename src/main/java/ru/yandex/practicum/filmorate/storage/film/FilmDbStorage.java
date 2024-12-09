@@ -48,7 +48,7 @@ public class FilmDbStorage implements FilmStorage {
                            r.name AS rating_name, fl.likes
                     FROM film AS f
                     LEFT JOIN rating AS r ON f.rating_id = r.rating_id
-                    INNER JOIN
+                    LEFT JOIN
                       (SELECT film_id,
                               COUNT(DISTINCT user_id) AS likes
                        FROM film_like
