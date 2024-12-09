@@ -5,10 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
@@ -18,6 +16,8 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 //@Import({UserDbStorage.class})
 class FilmorateApplicationTests {
 	private final MpaDbStorage mpaDbStorage;
+	private final DirectorDbStorage directorDbStorage;
 	private final GenreDbStorage genreDbStorage;
 	private final FriendshipDbStorage friendshipDbStorage;
 	private final FilmDbStorage filmDbStorage;
@@ -157,7 +158,7 @@ class FilmorateApplicationTests {
 	public void testCreateFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
 
 		Film createdFilm = filmDbStorage.create(film);
 
@@ -172,11 +173,11 @@ class FilmorateApplicationTests {
 	public void testUpdateFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
 
 		Film createdFilm = filmDbStorage.create(film);
 
-		Film filmToUpdate = new Film(createdFilm.getId(), "Old Era", mpa, new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film filmToUpdate = new Film(createdFilm.getId(), "Old Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
 
 		Film updatedFilm = filmDbStorage.create(filmToUpdate);
 
@@ -191,7 +192,7 @@ class FilmorateApplicationTests {
 	public void testFindByIdFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
 		Film createdFilm = filmDbStorage.create(film);
 
 		Film foundFilm = filmDbStorage.findById(film.getId());
@@ -203,7 +204,7 @@ class FilmorateApplicationTests {
 	public void testFindAllFilms() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
 		Film createdFilm = filmDbStorage.create(film);
 
 		Collection<Film> films = filmDbStorage.findAll();
@@ -215,7 +216,7 @@ class FilmorateApplicationTests {
 	public void testDeleteFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
 		Film createdFilm = filmDbStorage.create(film);
 		filmDbStorage.delete(createdFilm);
 
@@ -223,4 +224,74 @@ class FilmorateApplicationTests {
 
 		assertFalse(films.contains(createdFilm));
 	}
+
+	@Test
+	public void testGetFilmsByDirector() {
+		Mpa mpa = new Mpa();
+		mpa.setId(1);
+		Director director = new Director(1L, "A. A. K.");
+		Director createdDirector = directorDbStorage.create(director);
+		Film film1 = new Film(1L, "New Era", mpa, new HashSet<Genre>(), Set.of(createdDirector), "BBB", LocalDate.of(2014, 8, 3), 60, new HashSet<>());
+		Film film2 = new Film(1L, "New Era 2", mpa, new HashSet<Genre>(), Set.of(createdDirector), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film createdFilm1 = filmDbStorage.create(film1);
+		Film createdFilm2 = filmDbStorage.create(film2);
+
+		List<Film> films = filmDbStorage.getByDirector(director.getId());
+
+		assertTrue(films.contains(createdFilm1));
+		assertTrue(films.contains(createdFilm2));
+		assertEquals(2, films.size());
+	}
+
+	@Test
+	public void testCreateDirector() {
+		Director director = new Director(1L, "Guy Ritchie");
+
+		Director createdDirector = directorDbStorage.create(director);
+
+		assertThat(createdDirector).hasFieldOrPropertyWithValue("name", "Guy Ritchie");
+	}
+
+	@Test
+	public void testUpdateDirector() {
+		Director director = new Director(1L, "Guy Ritchie 2");
+		Director createdDirector = directorDbStorage.create(director);
+
+		Director directorToUpdate = new Director(createdDirector.getId(), "Quentin Jerome Tarantino");
+		Director updatedDirector = directorDbStorage.create(directorToUpdate);
+
+		assertThat(updatedDirector).hasFieldOrPropertyWithValue("name", "Quentin Jerome Tarantino");
+	}
+
+	@Test
+	public void testFindByIdDirector() {
+		Director director = new Director(1L, "Guy Ritchie 3");
+		Director createdDirector = directorDbStorage.create(director);
+
+		Director foundDirector = directorDbStorage.findById(createdDirector.getId());
+
+		assertThat(foundDirector).hasFieldOrPropertyWithValue("id", createdDirector.getId());
+	}
+
+	@Test
+	public void testFindAllDirectors() {
+		Director director = new Director(1L, "Guy Ritchie 4");
+		Director createdDirector = directorDbStorage.create(director);
+
+		Collection<Director> directors = directorDbStorage.findAll();
+
+		assertTrue(directors.contains(createdDirector));
+	}
+
+	@Test
+	public void testDeleteDirector() {
+		Director director = new Director(1L, "Guy Ritchie 5");
+		Director createdDirector = directorDbStorage.create(director);
+		directorDbStorage.delete(createdDirector);
+
+		Collection<Director> directors = directorDbStorage.findAll();
+
+		assertFalse(directors.contains(createdDirector));
+	}
+
 }

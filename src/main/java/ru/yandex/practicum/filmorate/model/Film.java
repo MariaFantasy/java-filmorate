@@ -24,6 +24,8 @@ public class Film {
 
     private Set<Genre> genres = new LinkedHashSet<>();
 
+    private Set<Director> directors = new LinkedHashSet<>();
+
     private String description;
 
     @NotNull(message = "Дата релиза фильма не может быть пустой")
@@ -37,5 +39,13 @@ public class Film {
 
     public void addGenre(Genre genre) {
         genres.add(genre);
+    }
+
+    public void addDirector(Director director) {
+        directors.add(director);
+    }
+
+    public void addLike(Long userId) {
+        likedUsers.add(userId);
     }
 }
