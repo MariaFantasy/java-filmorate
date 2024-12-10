@@ -22,14 +22,14 @@ import static java.util.function.UnaryOperator.identity;
 @Repository("directorDbStorage")
 @RequiredArgsConstructor
 public class DirectorDbStorage implements DirectorStorage {
-    private final JdbcTemplate jdbc;
-    private final DirectorRowMapper mapper;
-
     private static final String FIND_ALL_QUERY = "SELECT director_id, name FROM director ORDER BY director_id";
     private static final String FIND_BY_ID_QUERY = "SELECT director_id, name FROM director WHERE director_id = ?";
     private static final String INSERT_QUERY = "INSERT INTO director (name) VALUES (?)";
     private static final String UPDATE_BY_ID_QUERY = "UPDATE director SET name = ? WHERE director_id = ?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM director WHERE director_id = ?";
+
+    private final JdbcTemplate jdbc;
+    private final DirectorRowMapper mapper;
 
     @Override
     public Director create(Director director) {

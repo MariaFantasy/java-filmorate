@@ -15,11 +15,11 @@ import java.util.Collection;
 @Repository("feedDbStorage")
 @RequiredArgsConstructor
 public class FeedDbStorage implements FeedStorage {
-    private final JdbcTemplate jdbc;
-    private final EventRowMapper mapper;
-
     public static final String INSERT_QUERY = "INSERT INTO event(user_id, entity_id, event_type, operation, timestamp) VALUES (?, ?, ?, ?, ?)";
     private static final String GET_USER_FEED_QUERY = "SELECT event_id, user_id, entity_id, event_type, operation, timestamp FROM event WHERE user_id = ?";
+
+    private final JdbcTemplate jdbc;
+    private final EventRowMapper mapper;
 
     @Override
     public Event create(Event event) {

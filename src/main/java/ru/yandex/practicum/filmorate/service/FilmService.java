@@ -16,6 +16,9 @@ import java.util.*;
 
 @Service
 public class FilmService {
+    private static final String SEARCH_BY_TITLE = "title";
+    private static final String SEARCH_BY_DIRECTOR = "director";
+
     private final FilmStorage filmStorage;
     private final UserService userService;
     private final GenreService genreService;
@@ -185,11 +188,11 @@ public class FilmService {
         String[] searchFields = by.split(",");
         Set<Film> resultFilms = new LinkedHashSet<>();
 
-        if (Arrays.asList(searchFields).contains("title")) {
+        if (Arrays.asList(searchFields).contains(SEARCH_BY_TITLE)) {
             resultFilms.addAll(filmStorage.searchFilmsByTitle(query));
         }
 
-        if (Arrays.asList(searchFields).contains("director")) {
+        if (Arrays.asList(searchFields).contains(SEARCH_BY_DIRECTOR)) {
             resultFilms.addAll(filmStorage.searchFilmsByDirector(query));
         }
 

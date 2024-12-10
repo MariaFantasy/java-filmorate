@@ -21,7 +21,7 @@ public class ReviewController {
     @GetMapping
     public Collection<Review> findByParameter(@RequestParam(required = false) Long filmId,
                                               @RequestParam(defaultValue = "10") int count) {
-        log.info("Пришел GET запрос /reviews");
+        log.info("Пришел GET запрос /reviews с параметрами: filmId={}, count={}", filmId, count);
         Collection<Review> allReviews = reviewService.findByParameter(filmId, count);
         log.info("Отправлен ответ GET /reviews с телом: {}", allReviews);
         return allReviews;

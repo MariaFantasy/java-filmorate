@@ -13,11 +13,11 @@ import java.util.Collection;
 @Repository("mpaStorage")
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
-    private final JdbcTemplate jdbc;
-    private final MpaRowMapper mapper;
-
     private static final String FIND_ALL_QUERY = "SELECT rating_id, name FROM rating ORDER BY rating_id";
     private static final String FIND_BY_ID_QUERY = "SELECT rating_id, name FROM rating WHERE rating_id = ?";
+
+    private final JdbcTemplate jdbc;
+    private final MpaRowMapper mapper;
 
     @Override
     public Mpa findById(Integer id) {

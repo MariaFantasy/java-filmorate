@@ -16,9 +16,6 @@ import java.util.List;
 @Repository("reviewDbStorage")
 @RequiredArgsConstructor
 public class ReviewDBStorage implements ReviewStorage {
-    private final JdbcTemplate jdbc;
-    private final ReviewRowMapper mapper;
-
     private static final String FIND_LIMITED_QUERY = "SELECT * FROM film_review ORDER BY useful desc limit ?";
     private static final String FIND_LIMITED_BY_FILM_QUERY = """
             SELECT * FROM film_review
@@ -47,6 +44,9 @@ public class ReviewDBStorage implements ReviewStorage {
             on fr.review_id = frl.review_id
             WHERE frl.review_id = ? AND frl.user_id = ? AND frl.like_value = ?
             """;
+
+    private final JdbcTemplate jdbc;
+    private final ReviewRowMapper mapper;
 
     @Override
     public List<Review> findLimited(int count) {
