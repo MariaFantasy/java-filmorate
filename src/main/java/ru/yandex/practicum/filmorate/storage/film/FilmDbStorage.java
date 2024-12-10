@@ -106,34 +106,22 @@ public class FilmDbStorage implements FilmStorage {
                 f.rating_id,
                 r.name AS rating_name
             FROM film AS f
-            LEFT JOIN rating AS r
-            ON f.rating_id = r.rating_id
+            LEFT JOIN rating AS r ON f.rating_id = r.rating_id
             WHERE f.film_id IN (
-                SELECT
-                    fl.film_id
+                SELECT fl.film_id
                 FROM film_like AS fl
                 INNER JOIN (
-                    SELECT
-                        ul.user_id,
-                        COUNT(ul.film_id) AS balls
+                    SELECT ul.user_id, COUNT(ul.film_id) AS balls
                     FROM film_like AS ul
-                    INNER JOIN (
-                        SELECT
-                            film_id
+                    WHERE ul.film_id IN (
+                        SELECT film_id
                         FROM film_like
                         WHERE user_id = ?
-                    ) AS sf
-                    ON ul.film_id = sf.film_id
+                    )
                     GROUP BY ul.user_id
-                ) AS fb
-                ON fl.user_id = fb.user_id
-                WHERE fl.film_id NOT IN (
-                    SELECT
-                        film_id
-                    FROM film_like
-                    WHERE user_id = ?
-                )
+                ) AS fb ON fl.user_id = fb.user_id
                 GROUP BY fl.film_id
+                HAVING MAX(case when fl.user_id = ? then 1 else 0 end) = 0
                 ORDER BY SUM(fb.balls) DESC
             );
             """;
