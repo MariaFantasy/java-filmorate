@@ -16,14 +16,14 @@ import java.util.Collection;
 @Repository("userDbStorage")
 @RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
-    private final JdbcTemplate jdbc;
-    private final UserRowMapper mapper;
-
     private static final String FIND_ALL_QUERY = "SELECT u.user_id, u.email, u.login, u.name, u.birthday FROM users AS u";
     private static final String FIND_BY_ID_QUERY = "SELECT u.user_id, u.email, u.login, u.name, u.birthday FROM users AS u WHERE u.user_id = ?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM users WHERE user_id = ?";
     private static final String UPDATE_BY_ID_QUERY = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE user_id = ?";
     private static final String INSERT_QUERY = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+
+    private final JdbcTemplate jdbc;
+    private final UserRowMapper mapper;
 
     @Override
     public User create(User user) {

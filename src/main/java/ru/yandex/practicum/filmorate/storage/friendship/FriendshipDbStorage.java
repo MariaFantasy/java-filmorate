@@ -12,13 +12,13 @@ import java.util.Collection;
 @Repository("friendshipDbStorage")
 @RequiredArgsConstructor
 public class FriendshipDbStorage implements FriendshipStorage {
-    private final JdbcTemplate jdbc;
-    private final FriendshipRowMapper mapper;
-
     private static final String ADD_FRIEND_QUERY = "MERGE INTO user_friend (user_id, friend_id, friendship_status_id) VALUES (?, ?, 2)";
     private static final String CONFIRM_FRIEND_QUERY = "UPDATE user_friend SET friendship_status_id = 1 WHERE user_id = ? AND friend_id = ?";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM user_friend WHERE user_id = ? AND friend_id = ?";
     private static final String GET_FRIENDS_QUERY = "SELECT friend_id FROM user_friend WHERE user_id = ? AND friendship_status_id = 1";
+
+    private final JdbcTemplate jdbc;
+    private final FriendshipRowMapper mapper;
 
     @Override
     public Collection<Long> getFriends(User user) {
