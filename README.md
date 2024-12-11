@@ -24,6 +24,7 @@ erDiagram
         date release_date
         integer duration
         integer rating_id FK "Nullable"
+        double rate
     }
 
     rating {
@@ -34,6 +35,7 @@ erDiagram
     film_like {
         bigint film_id FK
         bigint user_id FK
+        double mark
     }
 
     users {

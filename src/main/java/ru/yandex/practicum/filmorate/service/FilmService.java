@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.DatabaseException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -109,7 +110,7 @@ public class FilmService {
         return findById(film.getId());
     }
 
-    public Film likeFilm(Long filmId, Long userId) {
+    public Film likeFilm(Long filmId, Long userId, double mark) {
         final Film film = filmStorage.findById(filmId);
         final User user = userService.findById(userId);
         if (film == null) {
@@ -118,7 +119,10 @@ public class FilmService {
         if (user == null) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден.");
         }
-        filmStorage.addLike(film, user);
+        if (mark < 1 || mark > 10) {
+            throw new ConditionsNotMetException("Оценка должна быть от 1 до 10. Получена оценка - " + mark);
+        }
+        filmStorage.addLike(film, user, mark);
         feedService.create(userId, filmId, EventType.LIKE, Operation.ADD);
 
         return film;

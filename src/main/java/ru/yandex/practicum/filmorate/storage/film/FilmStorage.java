@@ -19,7 +19,7 @@ public interface FilmStorage {
 
     public Collection<Film> findAll();
 
-    public void addLike(Film film, User user);
+    public void addLike(Film film, User user, double mark);
 
     public void deleteLike(Film film, User user);
 

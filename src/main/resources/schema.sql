@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS film (
     release_date DATE NOT NULL,
     duration INTEGER NOT NULL,
     rating_id INTEGER,
+    rate DOUBLE default 0,
     FOREIGN KEY (rating_id) REFERENCES rating(rating_id),
     CONSTRAINT positive_duration CHECK (duration > 0),
     CONSTRAINT min_release_date CHECK (release_date >= '1895-12-28'::DATE)
@@ -57,6 +58,7 @@ CREATE TABLE IF NOT EXISTS user_friend (
 CREATE TABLE IF NOT EXISTS film_like (
     film_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
+    mark DOUBLE NOT NULL,
     FOREIGN KEY (film_id) REFERENCES film(film_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT film_like_PK PRIMARY KEY (film_id, user_id)
