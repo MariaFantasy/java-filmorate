@@ -1,18 +1,19 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.service.*;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
+import ru.yandex.practicum.filmorate.storage.director.mapper.DirectorRowMapper;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.feed.InMemoryFeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.friendship.FriendshipStorage;
@@ -26,57 +27,62 @@ import ru.yandex.practicum.filmorate.storage.mpa.mapper.MpaRowMapper;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
     public static FriendshipStorage friendshipStorage = new InMemoryFriendshipStorage();
+    public static FeedStorage feedStorage = new InMemoryFeedStorage();
     public static UserStorage userStorage = new InMemoryUserStorage();
     public static GenreStorage genreStorage = new GenreDbStorage(new JdbcTemplate(), new GenreRowMapper());
     public static MpaStorage mpaStorage = new MpaDbStorage(new JdbcTemplate(), new MpaRowMapper());
+    public static DirectorStorage directorStorage = new DirectorDbStorage(new JdbcTemplate(), new DirectorRowMapper());
     public static FilmStorage filmStorage = new InMemoryFilmStorage();
 
     public static FriendshipService friendshipService = new FriendshipService(friendshipStorage);
-    public static UserService userService = new UserService(userStorage, friendshipService);
-    public static GenreService genreService = new GenreService((genreStorage));
-    public static MpaService mpaService = new MpaService((mpaStorage));
-    public static FilmService filmService = new FilmService(filmStorage, userService, genreService, mpaService);
+    public static FeedService feedService = new FeedService(feedStorage);
+    public static UserService userService = new UserService(userStorage, friendshipService, feedService);
+    public static GenreService genreService = new GenreService(genreStorage);
+    public static MpaService mpaService = new MpaService(mpaStorage);
+    public static DirectorService directorService = new DirectorService(directorStorage);
+    public static FilmService filmService = new FilmService(filmStorage, userService, genreService, mpaService, directorService, feedService);
 
     public static FilmController filmController = new FilmController(filmService);
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
     public void testThrowsIfFilmNameIsEmpty() {
-        Film film = new Film(1L, null, new Mpa(), new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(1L, null, new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
     public void testThrowsIfFilmNameIsBlank() {
-        Film film = new Film(1L, "   ", new Mpa(), new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(1L, "   ", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
     public void testThrowsIfFilmDescriptionLengthMoreThan200() {
-        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), "B".repeat(201), LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "B".repeat(201), LocalDate.of(2024, 8, 3), 60, new HashSet<>());
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmReleaseDateIsBefore28Dec1895() {
-        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), "BBB", LocalDate.of(1895, 12, 27), 60, new HashSet<>());
+        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(1895, 12, 27), 60, new HashSet<>());
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmDurationIsPositive() {
-        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 0, new HashSet<>());
+        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 0, new HashSet<>());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
@@ -115,10 +121,10 @@ public class FilmControllerTest {
 
     @Test
     public void testAddLikeNotFoundFilm() {
-        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
         User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User createdUser = userStorage.create(user);
-        assertThrows(NotFoundException.class, () ->  filmController.addLike(film.getId(), createdUser.getId()));
+        assertThrows(NotFoundException.class, () -> filmController.addLike(film.getId(), createdUser.getId()));
     }
 
 //    @Test
@@ -134,7 +140,7 @@ public class FilmControllerTest {
 
     @Test
     public void testDeleteLikeNormalNotFoundFilm() {
-        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
         User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User createdUser = userStorage.create(user);
         assertThrows(NotFoundException.class, () -> filmController.deleteLike(film.getId(), createdUser.getId()));

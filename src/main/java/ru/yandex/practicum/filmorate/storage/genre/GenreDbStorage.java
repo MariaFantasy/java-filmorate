@@ -19,11 +19,11 @@ import static java.util.function.UnaryOperator.identity;
 @Repository("genreDbStorage")
 @RequiredArgsConstructor
 public class GenreDbStorage implements GenreStorage {
-    private final JdbcTemplate jdbc;
-    private final GenreRowMapper mapper;
-
     private static final String FIND_ALL_QUERY = "SELECT genre_id, name FROM genre ORDER BY genre_id";
     private static final String FIND_BY_ID_QUERY = "SELECT genre_id, name FROM genre WHERE genre_id = ?";
+
+    private final JdbcTemplate jdbc;
+    private final GenreRowMapper mapper;
 
     @Override
     public Genre findById(Integer id) {
