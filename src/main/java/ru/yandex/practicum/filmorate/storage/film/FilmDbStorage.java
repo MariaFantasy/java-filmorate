@@ -118,7 +118,6 @@ public class FilmDbStorage implements FilmStorage {
                            GROUP  BY film_id)
             WHERE  film_id = ?""";
 
-    //TODO Сергей: Популярность оценивается по полю rate в таблице film
     private static final String FIND_POPULAR_QUERY = """
             SELECT f.film_id,
                    f.name,
@@ -127,23 +126,17 @@ public class FilmDbStorage implements FilmStorage {
                    f.duration,
                    f.rate,
                    f.rating_id,
-                   r.name AS rating_name,
-                   fl.likes
+                   r.name AS rating_name
             FROM   film AS f
                    LEFT JOIN rating AS r
                           ON f.rating_id = r.rating_id
-                   LEFT JOIN (SELECT film_id,
-                                     Count(DISTINCT user_id) AS likes
-                              FROM   film_like
-                              GROUP  BY film_id) AS fl
-                          ON f.film_id = fl.film_id
             WHERE  ( ? IS NULL
                       OR Extract(year FROM f.release_date) = ? )
                    AND ( ? IS NULL
                           OR ? IN (SELECT genre_id
                                    FROM   film_genre
                                    WHERE  film_id = f.film_id) )
-            ORDER  BY fl.likes DESC
+            ORDER  BY f.rate DESC
             LIMIT  ?""";
 
     //TODO Антон: Популярность оценивается по полю rate в таблице film
