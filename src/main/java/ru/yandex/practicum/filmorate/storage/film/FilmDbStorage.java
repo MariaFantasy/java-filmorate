@@ -208,7 +208,6 @@ public class FilmDbStorage implements FilmStorage {
             );
             """;
 
-    //TODO Популярность оценивается по полю rate в таблице film
     private static final String FIND_COMMON_QUERY = """
             SELECT f.film_id,
                    f.NAME,
@@ -217,16 +216,10 @@ public class FilmDbStorage implements FilmStorage {
                    f.duration,
                    f.rate,
                    f.rating_id,
-                   r.NAME AS rating_name,
-                   fl.likes
+                   r.NAME AS rating_name
             FROM   film AS f
                    LEFT JOIN rating AS r
                           ON f.rating_id = r.rating_id
-                   INNER JOIN (SELECT film_id,
-                                      Count(DISTINCT user_id) AS likes
-                               FROM   film_like
-                               GROUP  BY film_id) AS fl
-                           ON f.film_id = fl.film_id
             WHERE  f.film_id IN (SELECT film_id
                                  FROM   film_like
                                  WHERE  user_id = ?
@@ -234,7 +227,7 @@ public class FilmDbStorage implements FilmStorage {
                                  SELECT film_id
                                  FROM   film_like
                                  WHERE  user_id = ?)
-            ORDER  BY fl.likes DESC""";
+            ORDER  BY f.rate DESC""";
 
     private final JdbcTemplate jdbc;
     private final FilmRowMapper mapper;
