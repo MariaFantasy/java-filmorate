@@ -158,7 +158,7 @@ class FilmorateApplicationTests {
 	public void testCreateFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 
 		Film createdFilm = filmDbStorage.create(film);
 
@@ -173,11 +173,11 @@ class FilmorateApplicationTests {
 	public void testUpdateFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 
 		Film createdFilm = filmDbStorage.create(film);
 
-		Film filmToUpdate = new Film(createdFilm.getId(), "Old Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film filmToUpdate = new Film(createdFilm.getId(), "Old Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 
 		Film updatedFilm = filmDbStorage.create(filmToUpdate);
 
@@ -192,7 +192,7 @@ class FilmorateApplicationTests {
 	public void testFindByIdFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 		Film createdFilm = filmDbStorage.create(film);
 
 		Film foundFilm = filmDbStorage.findById(film.getId());
@@ -204,7 +204,7 @@ class FilmorateApplicationTests {
 	public void testFindAllFilms() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 		Film createdFilm = filmDbStorage.create(film);
 
 		Collection<Film> films = filmDbStorage.findAll();
@@ -216,7 +216,7 @@ class FilmorateApplicationTests {
 	public void testDeleteFilm() {
 		Mpa mpa = new Mpa();
 		mpa.setId(1);
-		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film = new Film(1L, "New Era", mpa, new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 		Film createdFilm = filmDbStorage.create(film);
 		filmDbStorage.delete(createdFilm);
 
@@ -231,8 +231,8 @@ class FilmorateApplicationTests {
 		mpa.setId(1);
 		Director director = new Director(1L, "A. A. K.");
 		Director createdDirector = directorDbStorage.create(director);
-		Film film1 = new Film(1L, "New Era", mpa, new HashSet<Genre>(), Set.of(createdDirector), "BBB", LocalDate.of(2014, 8, 3), 60, new HashSet<>());
-		Film film2 = new Film(1L, "New Era 2", mpa, new HashSet<Genre>(), Set.of(createdDirector), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+		Film film1 = new Film(1L, "New Era", mpa, new HashSet<Genre>(), Set.of(createdDirector), "BBB", LocalDate.of(2014, 8, 3), 60, 6., new HashSet<>());
+		Film film2 = new Film(1L, "New Era 2", mpa, new HashSet<Genre>(), Set.of(createdDirector), "BBB", LocalDate.of(2024, 8, 3), 60, 6., new HashSet<>());
 		Film createdFilm1 = filmDbStorage.create(film1);
 		Film createdFilm2 = filmDbStorage.create(film2);
 
