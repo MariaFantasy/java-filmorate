@@ -109,11 +109,10 @@ public class FilmController {
         return commonFilms;
     }
 
-    //TODO Мария: Добавить сортировку по директору /films/director/1?sortBy=rate
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
         log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
-        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes")) {
+        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes") && !sortBy.equals("rate")) {
             throw new ConditionsNotMetException("Сортировки " + sortBy + " пока не существует.");
         }
         Collection<Film> films = filmService.getByDirector(directorId, sortBy);

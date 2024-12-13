@@ -178,6 +178,9 @@ public class FilmService {
                 if (sortType.equals("likes")) {
                     return -Long.compare(film.getLikedUsers().size(), otherFilm.getLikedUsers().size());
                 }
+                if (sortType.equals("rate")) {
+                    return -Double.compare(film.getRate(), otherFilm.getRate());
+                }
                 return 0;
             }
         });
