@@ -56,33 +56,38 @@ public class FilmControllerTest {
 
     @Test
     public void testThrowsIfFilmNameIsEmpty() {
-        Film film = new Film(1L, null, new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(1L, null, new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "BBB", LocalDate.of(2024, 8, 3), 60, 0, new HashSet<>());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
     public void testThrowsIfFilmNameIsBlank() {
-        Film film = new Film(1L, "   ", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(1L, "   ", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "BBB", LocalDate.of(2024, 8, 3), 60, 0, new HashSet<>());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
 
     @Test
     public void testThrowsIfFilmDescriptionLengthMoreThan200() {
-        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "B".repeat(201), LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "B".repeat(201), LocalDate.of(2024, 8, 3), 60, 0, new HashSet<>());
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmReleaseDateIsBefore28Dec1895() {
-        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(1895, 12, 27), 60, new HashSet<>());
+        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "BBB", LocalDate.of(1895, 12, 27), 60, 0, new HashSet<>());
         assertThrows(ConditionsNotMetException.class, () -> filmController.create(film), "ConditionsNotMetException was expected");
     }
 
     @Test
     public void testThrowsIfFilmDurationIsPositive() {
-        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 0, new HashSet<>());
+        Film film = new Film(1L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "BBB", LocalDate.of(2024, 8, 3), 0, 0, new HashSet<>());
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty(), "Validation errors expected");
     }
@@ -121,10 +126,11 @@ public class FilmControllerTest {
 
     @Test
     public void testAddLikeNotFoundFilm() {
-        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "BBB", LocalDate.of(2024, 8, 3), 60, 0, new HashSet<>());
         User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User createdUser = userStorage.create(user);
-        assertThrows(NotFoundException.class, () -> filmController.addLike(film.getId(), createdUser.getId()));
+        assertThrows(NotFoundException.class, () -> filmController.addLike(film.getId(), createdUser.getId(), 6));
     }
 
 //    @Test
@@ -140,7 +146,8 @@ public class FilmControllerTest {
 
     @Test
     public void testDeleteLikeNormalNotFoundFilm() {
-        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(), "BBB", LocalDate.of(2024, 8, 3), 60, new HashSet<>());
+        Film film = new Film(10000L, "ABC", new Mpa(), new HashSet<Genre>(), new HashSet<Director>(),
+                "BBB", LocalDate.of(2024, 8, 3), 60, 0, new HashSet<>());
         User user = new User(1L, "myemail@gmail.com", "login", "name", LocalDate.of(2024, 1, 1));
         User createdUser = userStorage.create(user);
         assertThrows(NotFoundException.class, () -> filmController.deleteLike(film.getId(), createdUser.getId()));

@@ -13,7 +13,7 @@ import java.util.Set;
 @lombok.Data
 @lombok.AllArgsConstructor
 @lombok.RequiredArgsConstructor
-@lombok.EqualsAndHashCode(of = { "id" })
+@lombok.EqualsAndHashCode(of = {"id"})
 public class Film {
     private Long id;
 
@@ -33,6 +33,8 @@ public class Film {
 
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private int duration;
+
+    private double rate;
 
     @JsonIgnore
     private Set<Long> likedUsers = new HashSet<>();

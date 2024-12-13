@@ -67,10 +67,18 @@ public class FilmController {
         throw new NotFoundException("Фильм с id = " + filmId + " не найден");
     }
 
+    @PutMapping("/{filmId}/like/{userId}/{mark}")
+    public Film addLike(@PathVariable Long filmId, @PathVariable Long userId, @PathVariable double mark) {
+        log.info("Пришел PUT запрос /films/{}/like/{}/{}", filmId, userId, mark);
+        Film film = filmService.likeFilm(filmId, userId, mark);
+        log.info("Отправлен ответ PUT /films/{}/like/{}/{} с телом: {}", filmId, userId, mark, film);
+        return film;
+    }
+
     @PutMapping("/{filmId}/like/{userId}")
     public Film addLike(@PathVariable Long filmId, @PathVariable Long userId) {
-        log.info("Пришел PUT запрос /films/{}/like/{}", filmId, userId);
-        Film film = filmService.likeFilm(filmId, userId);
+        log.info("Пришел PUT запрос /films/{}/like/{} Ставлю дефолтную оценку 6", filmId, userId);
+        Film film = filmService.likeFilm(filmId, userId, 6D);
         log.info("Отправлен ответ PUT /films/{}/like/{} с телом: {}", filmId, userId, film);
         return film;
     }
@@ -104,7 +112,7 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirector(@PathVariable Long directorId, @RequestParam String sortBy) {
         log.info("Пришел GET запрос /films/director/{}?sortBy={}", directorId, sortBy);
-        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes")) {
+        if (sortBy != null && !sortBy.equals("year") && !sortBy.equals("likes") && !sortBy.equals("rate")) {
             throw new ConditionsNotMetException("Сортировки " + sortBy + " пока не существует.");
         }
         Collection<Film> films = filmService.getByDirector(directorId, sortBy);
