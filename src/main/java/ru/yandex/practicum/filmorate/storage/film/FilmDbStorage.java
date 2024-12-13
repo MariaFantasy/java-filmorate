@@ -139,7 +139,7 @@ public class FilmDbStorage implements FilmStorage {
             ORDER  BY f.rate DESC
             LIMIT  ?""";
 
-    //TODO Антон: Популярность оценивается по полю rate в таблице film
+
     private static final String SEARCH_FILMS_BY_DIRECTOR_SQL = """
             SELECT f.film_id,
                    f.NAME,
@@ -158,9 +158,8 @@ public class FilmDbStorage implements FilmStorage {
                    LEFT JOIN director AS d
                           ON d.director_id = fd.director_id
             WHERE  Lower(d.NAME) LIKE Lower(?)
-            ORDER  BY f.film_id""";
+            ORDER BY f.rate DESC""";
 
-    //TODO Антон: Популярность оценивается по полю rate в таблице film
     private static final String SEARCH_FILMS_BY_TITLE_SQL = """
             SELECT f.film_id,
                    f.NAME,
@@ -174,7 +173,7 @@ public class FilmDbStorage implements FilmStorage {
                    LEFT JOIN rating AS r
                           ON f.rating_id = r.rating_id
             WHERE  Lower(f.NAME) LIKE Lower(?)
-            ORDER  BY f.film_id""";
+            ORDER BY f.rate DESC""";
 
     private static final String RECOMMENDATION_LIST_QUERY = """
             SELECT

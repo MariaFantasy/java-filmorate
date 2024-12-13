@@ -208,7 +208,7 @@ public class FilmService {
 
         List<Film> sortedFilms = new ArrayList<>(resultFilms);
         filmStorage.loadLikes(sortedFilms);
-        sortedFilms.sort((film1, film2) -> Integer.compare(film2.getLikedUsers().size(), film1.getLikedUsers().size()));
+        sortedFilms.sort((film1, film2) -> Double.compare(film2.getRate(), film1.getRate()));
 
         return sortedFilms;
 
