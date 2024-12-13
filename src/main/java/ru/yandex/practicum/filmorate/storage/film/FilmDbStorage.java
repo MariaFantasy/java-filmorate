@@ -176,7 +176,6 @@ public class FilmDbStorage implements FilmStorage {
             WHERE  Lower(f.NAME) LIKE Lower(?)
             ORDER  BY f.film_id""";
 
-    //TODO Костя: Популярность оценивается по полю rate в таблице film
     private static final String RECOMMENDATION_LIST_QUERY = """
             SELECT
                 f.film_id,
@@ -189,16 +188,16 @@ public class FilmDbStorage implements FilmStorage {
                 r.name AS rating_name
             FROM film AS f
             LEFT JOIN rating AS r ON f.rating_id = r.rating_id
-            WHERE f.film_id IN (
+            WHERE f.rate>5 and f.film_id IN (
                 SELECT fl.film_id
                 FROM film_like AS fl
                 INNER JOIN (
                     SELECT ul.user_id, COUNT(ul.film_id) AS balls
                     FROM film_like AS ul
-                    WHERE ul.film_id IN (
+                    WHERE EXISTS (
                         SELECT film_id
                         FROM film_like
-                        WHERE user_id = ?
+                        WHERE user_id = ? AND film_id = ul.film_id and mark = ul.mark
                     )
                     GROUP BY ul.user_id
                 ) AS fb ON fl.user_id = fb.user_id
